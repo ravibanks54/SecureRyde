@@ -46,3 +46,42 @@ function appendMarker(map, latitude, longitude, text) {
     return new google.maps.Marker(markerOption);
 }
 
+var myCarRegistryInstance;
+var account;
+var accounts;
+
+function intializeCarRegistry() {
+	alert("hi srimom");
+	CarRegistry.new({from: accounts[3], gas: 3141592}).then(
+	function(register) {
+		console.log(register);
+		myCarRegistryInstance = register;
+		checkCarLocations();
+	});
+}
+
+function checkCarLocations() {
+	myCarRegistryInstance.registeredCars.call().then(
+	function(registeredCars) { 
+		registeredCars.forEach(function markerPosition(carAddress){
+			console.log(myCarRegistryInstance.returnPosition.call(carAddress));
+		});
+		return;
+	});
+}
+
+window.onload = function(){
+	web3.eth.getAccounts(function(err, accs) {
+	    if (err != null) {
+	      alert("There was an error fetching your accounts.");
+	      return;
+	    }
+	    if (accs.length == 0) {
+	      alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+	      return;
+	    }
+	    accounts = accs;
+	    account = accounts[0];
+	    intializeCarRegistry();
+	})
+}

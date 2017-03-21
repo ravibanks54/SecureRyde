@@ -11,6 +11,8 @@ contract CarRegistry {
     event TripQuoted(uint tripCost, uint timeToArrival);
     /* Constructor */
     function CarRegistry() {
+        registeredCars[0] = 0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20;
+        registeredCars[1] = 0xb063c23249bd719b4e5217b507570724ccbdbff1;
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].lat = "40.4317";
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].long = "-74.4050";
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].lat = "40.594";
@@ -22,12 +24,16 @@ contract CarRegistry {
 		string long;
 	}
 
+    function returnPosition(address carAddress) public returns (string, string){
+        return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
+    }
+
     struct TripPosition {
         Position clientPos;
         Position destPos;
         bool confirmed;
     }
-
+/*
     function joinCarRegistry(string initLat, string initLong) public {
     	if (msg.value > 0) throw;
     	if (carDatabase[msg.sender] == 0){		//Check if no entry exists
@@ -39,6 +45,8 @@ contract CarRegistry {
     		throw;
     	}
     }
+
+
     function updatePosition(string newLat, string newLong) public {
         if (msg.value > 0) throw;
     	if (carDatabase[msg.sender] != 0){
@@ -101,6 +109,6 @@ contract CarRegistry {
             throw;
         }
     }
-
+*/
 }
 
