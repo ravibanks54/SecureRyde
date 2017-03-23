@@ -11,8 +11,8 @@ contract CarRegistry {
     event TripQuoted(uint tripCost, uint timeToArrival);
     /* Constructor */
     function CarRegistry(){
-        registeredCars[0] = 0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20;
-        registeredCars[1] = 0xb063c23249bd719b4e5217b507570724ccbdbff1;
+        registeredCars[registeredCars.length++] = 0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20;
+        registeredCars[registeredCars.length++] = 0xb063c23249bd719b4e5217b507570724ccbdbff1;
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].lat = "40.4317";
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].long = "-74.4050";
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].lat = "40.594";
