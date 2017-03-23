@@ -10,7 +10,7 @@ contract CarRegistry {
 
     event TripQuoted(uint tripCost, uint timeToArrival);
     /* Constructor */
-    function CarRegistry() {
+    function CarRegistry(){
         registeredCars[0] = 0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20;
         registeredCars[1] = 0xb063c23249bd719b4e5217b507570724ccbdbff1;
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].lat = "40.4317";
@@ -24,8 +24,10 @@ contract CarRegistry {
 		string long;
 	}
 
-    function returnPosition(address carAddress) public returns (string, string){
-        return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
+    function returnPosition(address carAddress) public returns (string){
+        //return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
+        return (carDatabase[carAddress].lat);
+
     }
 
     struct TripPosition {
