@@ -54,7 +54,7 @@ window.App = {
     var register;
     CarRegistry.deployed().then(function(instance) {
       register = instance;
-      return checkCarLocations();
+      return self.checkCarLocations();
     });
   },
 
@@ -63,7 +63,7 @@ window.App = {
     var register;
     CarRegistry.deployed().then(function(instance) {
       register = instance;
-      this.setStatus("Loading");
+      self.setStatus("Loading");
       return register.returnPosition.call(account, {from: account});
     }).then(function(value) {
       self.setStatus(value);
