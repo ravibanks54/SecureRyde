@@ -67,8 +67,32 @@
       "links": {},
       "address": "0x35c439139e85cac514cd41abc794af75e3d46aab",
       "updated_at": 1490305462772
+    },
+    "1490331635430": {
+      "events": {
+        "0xa0ae8b9900c44104a293901cb589a4f12169a3778e37071da02dfe718c4cd930": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tripCost",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "timeToArrival",
+              "type": "uint256"
+            }
+          ],
+          "name": "TripQuoted",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x98281a2488abb3f5ebf82d52ba677134776d2245",
+      "updated_at": 1490331726619
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1490305462772
+  "updated_at": 1490331726619
 }
