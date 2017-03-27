@@ -17,10 +17,19 @@ var CarRegistry = contract(carregistry_artifacts);
 var accounts;
 var account;
 var map;
+var destinationLatLng;
+var userRequested = 0;
+var pos;
+var userLoc;
+var directionsDisplay;
+var directionsService;
+
 
 window.App = {
   start: function() {
 	 var self = this;
+	 directionsDisplay = new google.maps.DirectionsRenderer();
+	 directionsService = new google.maps.DirectionsService();
 
 	 //self.initMap();
 
@@ -135,7 +144,62 @@ window.App = {
 		title: text || 'Hello World!'
 	 };
 	 return new google.maps.Marker(markerOption);
-}
+},
+codeAddress: function(){
+		var self = this;
+		var geocoder = new google.maps.Geocoder();
+    var address = document.getElementById('address').value;
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == 'OK') {
+      	destinationLatLng = results[0].geometry.location;
+        map.setCenter(results[0].geometry.location);
+        self.calcRoute();
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+	},
+
+	calcRoute: function(){
+		var start = pos;
+		var end = destinationLatLng;
+		console.log("destination: " + destinationLatLng);
+		var request = {
+			origin: start,
+			destination: end,
+			travelMode: 'DRIVING'
+		};
+		console.log("Start: " + start);
+		console.log("End: " + end);
+
+		userLoc.setMap(null);
+		directionsDisplay.setMap(map);
+		//directionsDisplay.setPanel(do)
+
+		
+		directionsService.route(request, function(result, status) {
+			if (status == 'OK') {
+				console.log("Your directions are being rendered");
+				directionsDisplay.setDirections(result);
+
+				var legs = result.routes[0].legs;
+				var totalDistance = 0;
+				var totalDuration = 0;
+				for(var i=0; i<legs.length; ++i) {
+					totalDistance += legs[i].distance.value;
+					totalDuration += legs[i].duration.value;
+				}
+				totalDistance = Math.ceil(totalDistance * 0.0621371)/100;
+				totalDuration = Math.ceil(totalDuration / 60);
+				console.log("Distance to Destination: " + totalDistance + " miles");
+				console.log("Estimated Time: " + totalDuration + " minutes");
+
+			}else{
+				console.log("Problem with destination entered. Please try again.");
+			}
+		});
+	}
+
 /*
   refreshBalance: function() {
 	 var self = this;
@@ -192,19 +256,19 @@ window.addEventListener('load', function() {
 window.initMap = function() {
 		  map = new google.maps.Map(document.getElementById('map'), {
 			 center: {lat: 40.521, lng: -74.4623},
-			 zoom: 6
+			 zoom: 10
 		  });
 		  var infoWindow = new google.maps.InfoWindow({map: map});
 
 		  // Try HTML5 geolocation.
 		  if (navigator.geolocation) {
 			 navigator.geolocation.getCurrentPosition(function(position) {
-				var pos = {
+				pos = {
 				  lat: position.coords.latitude,
 				  lng: position.coords.longitude
 				};
 
-				var userLoc = new google.maps.Marker({
+				userLoc = new google.maps.Marker({
 				position: pos,
 				map: map
 			 });
