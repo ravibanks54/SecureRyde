@@ -60,6 +60,11 @@ window.App = {
 	 status.innerHTML = message;
   },
 
+  setElement: function(message, id) {
+  	var element = document.getElementById("id");
+  	element.innerHTML = message;
+  }
+
   initializeCarRegistry: function() {
 	 var self = this;
 
