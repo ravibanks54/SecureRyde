@@ -16,6 +16,7 @@ var CarRegistry = contract(carregistry_artifacts);
 // For application bootstrapping, check out window.addEventListener below.
 var accounts;
 var account;
+var map;
 
 window.App = {
   start: function() {
@@ -66,7 +67,21 @@ window.App = {
 	 CarRegistry.deployed().then(function(instance) {
 		register = instance;
 		self.setStatus("Loading");
-		return register.returnPosition.call(account, {from: account});
+		return register.getNumberOfCars.call({from: account});
+	 }).then(function(num){
+	 	console.log(num);
+	 	var posArr = [];
+	 	for (var i = 0; i < num; i++) {
+	 		var pos = register.getLocationByIndex.call(i, {from: account});
+	 		console.log(pos);
+	 		posArr.push(pos);
+	 	}
+	 	return Promise.all(posArr);
+	 }).then(function(array){
+	 	for (var i = array.length - 1; i >= 0; i--) {
+	 		appendMarker(map, parseFloat(array[i][0]), parseFloat(array[i][1]), "car");
+	 	}
+	 	return array;
 	 }).then(function(value) {
 		self.setStatus(value);
 	 }).catch(function(e) {
@@ -175,7 +190,7 @@ window.addEventListener('load', function() {
   App.start();
 });
 window.initMap = function() {
-		  var map = new google.maps.Map(document.getElementById('map'), {
+		  map = new google.maps.Map(document.getElementById('map'), {
 			 center: {lat: 40.521, lng: -74.4623},
 			 zoom: 6
 		  });
@@ -193,8 +208,8 @@ window.initMap = function() {
 				position: pos,
 				map: map
 			 });
-			 appendMarker(map, 40.4317, -74.4050, "Car 1");
-			 appendMarker(map, 40.594, -74.6049, "Car 2");
+			 //appendMarker(map, 40.4317, -74.4050, "Car 1");
+			 //appendMarker(map, 40.594, -74.6049, "Car 2");
 				map.setCenter(pos);
 			 }, function() {
 				handleLocationError(true, infoWindow, map.getCenter());
@@ -253,20 +268,4 @@ function initMap() {
 		  }
 		}
 
-function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-		  infoWindow.setPosition(pos);
-		  infoWindow.setContent(browserHasGeolocation ?
-										'Error: The Geolocation service failed.' :
-										'Error: Your browser doesn\'t support geolocation.');
-}
-
-function appendMarker(map, latitude, longitude, text) {
-	 var pos = {lat: latitude, lng: longitude};
-	 var markerOption = {
-		position: pos,
-		map: map,
-		title: text || 'Hello World!'
-	 };
-	 return new google.maps.Marker(markerOption);
-}
 */

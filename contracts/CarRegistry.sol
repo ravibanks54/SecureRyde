@@ -8,6 +8,10 @@ contract CarRegistry {
     mapping(address => TripPosition) customers; //Maps car addresses to client's current location
     address[] registeredCars;
 
+    string baseRate;
+    string dollarsPerMile;
+    string dollarsPerMinute;
+
     event TripQuoted(uint tripCost, uint timeToArrival);
     /* Constructor */
     function CarRegistry(){
@@ -17,6 +21,10 @@ contract CarRegistry {
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].long = "-74.4050";
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].lat = "40.594";
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].long = "-74.6049";
+        baseRate = "1.05";
+        dollarsPerMile = "1.15";
+        dollarsPerMinute = "0.153";
+
     }
     
     struct Position {
@@ -27,6 +35,21 @@ contract CarRegistry {
     function returnPosition(address carAddress) public returns (string, string){
         //return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
         return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
+    }
+
+    function getLocationByIndex(uint i) public returns (string, string){
+        if (i >= registeredCars.length){
+            throw;
+        }
+        return returnPosition(registeredCars[i]);
+    }
+
+    function getNumberOfCars() public returns (uint){
+        return registeredCars.length;
+    }
+
+    function returnRates() public returns (string, string, string){
+        return (baseRate, dollarsPerMinute, dollarsPerMile);
     }
 
     struct TripPosition {
