@@ -73,7 +73,7 @@ window.App = {
 		console.log(e);
 		self.setStatus("error");
 	 });
-  },
+  },/*
   initMap: function(){
   		var self = this;
 		  var map = new google.maps.Map(document.getElementById('map'), {
@@ -104,7 +104,7 @@ window.App = {
 			 // Browser doesn't support Geolocation
 			 self.handleLocationError(false, infoWindow, map.getCenter());
 		  }
-		},
+		},*/
 	 handleLocationError: function(browserHasGeolocation, infoWindow, pos) {
 		infoWindow.setPosition(pos);
 		infoWindow.setContent(browserHasGeolocation ?

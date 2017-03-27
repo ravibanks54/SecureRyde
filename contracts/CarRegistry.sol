@@ -24,10 +24,9 @@ contract CarRegistry {
 		string long;
 	}
 
-    function returnPosition(address carAddress) public returns (string){
+    function returnPosition(address carAddress) public returns (string, string){
         //return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
-        return (carDatabase[carAddress].lat);
-
+        return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
     }
 
     struct TripPosition {
