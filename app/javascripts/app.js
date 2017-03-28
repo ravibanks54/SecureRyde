@@ -17,7 +17,7 @@ var CarRegistry = contract(carregistry_artifacts);
 var accounts;
 var account;
 var map;
-var destinationLatLng;
+var destination;
 var userRequested = 0;
 var pos;
 var userLoc;
@@ -62,8 +62,8 @@ window.App = {
 
   setElement: function(message, id) {
   	var element = document.getElementById("id");
-  	element.innerHTML = message;
-  }
+  	status.innerHTML = message;
+  },
 
   initializeCarRegistry: function() {
 	 var self = this;
@@ -156,7 +156,7 @@ codeAddress: function(){
     var address = document.getElementById('address').value;
     geocoder.geocode( { 'address': address}, function(results, status) {
       if (status == 'OK') {
-      	destinationLatLng = results[0].geometry.location;
+      	destination = results[0];
         map.setCenter(results[0].geometry.location);
         self.calcRoute();
       } else {
@@ -166,9 +166,10 @@ codeAddress: function(){
 	},
 
 	calcRoute: function(){
+		var self = this;
 		var start = pos;
-		var end = destinationLatLng;
-		console.log("destination: " + destinationLatLng);
+		var end = destination.geometry.location;
+		console.log("destination: " + destination);
 		var request = {
 			origin: start,
 			destination: end,
@@ -198,6 +199,10 @@ codeAddress: function(){
 				totalDuration = Math.ceil(totalDuration / 60);
 				console.log("Distance to Destination: " + totalDistance + " miles");
 				console.log("Estimated Time: " + totalDuration + " minutes");
+				self.setElement(totalDistance + " miles", 'distanceEstimate');
+				self.setElement(totalDuration + " minutes", 'timeEstimate');
+				self.setElement("you cannot afford this", 'costEstimate');
+				self.setElement(destination.formatted_address, 'destinationRequested');
 
 			}else{
 				console.log("Problem with destination entered. Please try again.");
@@ -283,12 +288,17 @@ window.initMap = function() {
 			 }, function() {
 				handleLocationError(true, infoWindow, map.getCenter());
 			 });
+			 google.maps.event.addDomListener(window, 'load', initializeAutoComplete);
+
 		  } else {
 			 // Browser doesn't support Geolocation
 			 handleLocationError(false, infoWindow, map.getCenter());
 		  }
 		}
-
+function initializeAutoComplete(){
+	var input = document.getElementById('address');
+	var autocomplete = new google.maps.places.Autocomplete(input);
+}
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 		  infoWindow.setPosition(pos);
 		  infoWindow.setContent(browserHasGeolocation ?
@@ -301,6 +311,7 @@ function appendMarker(map, latitude, longitude, text) {
 	 var markerOption = {
 		position: pos,
 		map: map,
+		icon: 'https://cdn1.iconfinder.com/data/icons/automotix/128/bug_car_small_vintage_limousine-128.png',
 		title: text || 'Hello World!'
 	 };
 	 return new google.maps.Marker(markerOption);
