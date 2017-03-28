@@ -61,8 +61,8 @@ window.App = {
   },
 
   setElement: function(message, id) {
-  	var element = document.getElementById("id");
-  	status.innerHTML = message;
+  	var element = document.getElementById(id);
+  	element.innerHTML = message;
   },
 
   initializeCarRegistry: function() {
@@ -80,7 +80,7 @@ window.App = {
 	 var register;
 	 CarRegistry.deployed().then(function(instance) {
 		register = instance;
-		self.setStatus("Loading");
+		//self.setStatus("Loading");
 		return register.getNumberOfCars.call({from: account});
 	 }).then(function(num){
 	 	console.log(num);
@@ -97,10 +97,10 @@ window.App = {
 	 	}
 	 	return array;
 	 }).then(function(value) {
-		self.setStatus(value);
+		//self.setStatus(value);
 	 }).catch(function(e) {
 		console.log(e);
-		self.setStatus("error");
+		//self.setStatus("error");
 	 });
   },/*
   initMap: function(){
@@ -146,6 +146,7 @@ window.App = {
 	 var markerOption = {
 		position: pos,
 		map: map,
+		icon: 'https://lh3.googleusercontent.com/-UjKiveTyTUI/VKJ3RyUC0LI/AAAAAAAAAGc/zxBS9koEx6c/s512-p/nnkjn.png',
 		title: text || 'Hello World!'
 	 };
 	 return new google.maps.Marker(markerOption);
@@ -261,8 +262,19 @@ window.addEventListener('load', function() {
 	 window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
   }
 
+  $('#address').keydown(function (event) {
+    var keypressed = event.keyCode || event.which;
+    if (keypressed == 13) {
+        App.codeAddress();
+    }
+});
+
   App.start();
 });
+
+window.onload = function(){
+
+}
 window.initMap = function() {
 		  map = new google.maps.Map(document.getElementById('map'), {
 			 center: {lat: 40.521, lng: -74.4623},
@@ -296,7 +308,7 @@ window.initMap = function() {
 		  }
 		}
 function initializeAutoComplete(){
-	var input = document.getElementById('address');
+	var input = document.getElementById("address");
 	var autocomplete = new google.maps.places.Autocomplete(input);
 }
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -316,6 +328,7 @@ function appendMarker(map, latitude, longitude, text) {
 	 };
 	 return new google.maps.Marker(markerOption);
 }
+
 /*
 function initMap() {
 		  var map = new google.maps.Map(document.getElementById('map'), {

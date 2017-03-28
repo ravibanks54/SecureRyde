@@ -7,7 +7,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="./app.js"></script>
   <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFWwIg1RvXwj4ViPoNmBV7l-jght8onTc&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFWwIg1RvXwj4ViPoNmBV7l-jght8onTc&callback=initMap&libraries=places">
   </script>
 </head>
 <body>
@@ -25,10 +25,10 @@
   <br><br>
   <span id="status"></span>
   <br>
-  <div id="destinationRequested"></div><br>
-  <div id="distanceEstimate"></div><br>
-  <div id="timeEstimate"></div><br>
-  <div id="costEstimate">Nope!</div><br>
+  <div class="quoteDescriptor">Destination: <div id="destinationRequested" class="black quoteInfo"></div></div><br><br>
+  <div class="quoteDescriptor">Distance: <div id="distanceEstimate" class="black quoteInfo"></div></div><br><br>
+  <div class="quoteDescriptor">Time: <div id="timeEstimate" class="black quoteInfo"></div></div><br><br>
+  <div class="quoteDescriptor">Cost: <div id="costEstimate" class="black quoteInfo"></div></div><br><br>
 
 
   <span class="hint"><strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>

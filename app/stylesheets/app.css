@@ -56,3 +56,11 @@ h3 {
    height: 0;
    padding-bottom: 100%;
 }
+
+.quoteDescriptor {
+  float: left;
+}
+
+.quoteInfo {
+  text-align: right
+}
