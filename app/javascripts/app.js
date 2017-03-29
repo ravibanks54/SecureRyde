@@ -23,7 +23,7 @@ var pos;
 var userLoc;
 var directionsDisplay;
 var directionsService;
-
+var carLocations = [];
 
 window.App = {
 	start: function() {
@@ -92,8 +92,11 @@ window.App = {
 		}
 		return Promise.all(posArr);
 	}).then(function(array){
+		var carNumber = 0;
 		for (var i = array.length - 1; i >= 0; i--) {
-			appendMarker(map, parseFloat(array[i][0]), parseFloat(array[i][1]), "car");
+			carLocations[carNumber] = appendMarker(map, parseFloat(array[i][0]), parseFloat(array[i][1]), "car");
+			carNumber++;
+
 		}
 		return array;
 	}).then(function(value) {
@@ -102,7 +105,73 @@ window.App = {
 		console.log(e);
 		//self.setStatus("error");
 	});
-  },/*
+  },
+
+  findNearestCar: function(){
+  var self = this;
+  var mintime = -1;
+  var carNumber;
+  
+  for (var k = 0; k < carLocations.length; k++){
+  	var pos1 = pos;
+  	var pos2 = carLocations[k].position;
+  	var curTime = self.calcTime(pos1, pos2);
+
+  	if (mintime == -1){
+  		mintime = curTime;
+  		carNumber = k;
+  	}
+  	else {
+  		if(mintime > curTime){
+  			carLocations[carNumber].setMap(null);
+  			mintime = curTime;
+  			carNumber = k;
+
+  		}
+  		else{
+  			carLocations[k].setMap(null);
+  		}
+  	}
+  }
+
+
+  },
+
+  calcTime: function(pos1, pos2){
+
+  	var carDirectionsDisplay = new google.maps.DirectionsRenderer();
+	var carDirectionsService = new google.maps.DirectionsService();
+
+
+  	var request = {
+				origin: pos1,
+				destination: pos2,
+				travelMode: 'DRIVING'
+			};
+
+	carDirectionsService.route(request, function(result, status) {
+			if (status == 'OK') {
+		//		console.log("Your directions are being rendered");
+				carDirectionsDisplay.setDirections(result);
+
+				var legs = result.routes[0].legs;
+				var totalDuration = 0;
+				for(var i=0; i<legs.length; ++i) {
+					totalDuration += legs[i].duration.value;
+				}
+				totalDuration = Math.ceil(totalDuration / 60);
+				//self.setElement("you cannot afford this", 'costEstimate');
+				return totalDuration;
+
+			}else{
+				console.log("Problem with calculating time of cars");
+			}
+		});
+
+  },
+
+
+  /*
   initMap: function(){
   		var self = this;
 		  var map = new google.maps.Map(document.getElementById('map'), {
@@ -141,16 +210,16 @@ window.App = {
 				'Error: Your browser doesn\'t support geolocation.');
 		},
 
-		appendMarker: function(map, latitude, longitude, text) {
-			var pos = {lat: latitude, lng: longitude};
-			var markerOption = {
-				position: pos,
-				map: map,
-				icon: 'https://lh3.googleusercontent.com/-UjKiveTyTUI/VKJ3RyUC0LI/AAAAAAAAAGc/zxBS9koEx6c/s512-p/nnkjn.png',
-				title: text || 'Hello World!'
-			};
-			return new google.maps.Marker(markerOption);
-		},
+		// appendMarker: function(map, latitude, longitude, text) {
+		// 	var pos = {lat: latitude, lng: longitude};
+		// 	var markerOption = {
+		// 		position: pos,
+		// 		map: map,
+		// 		icon: 'https://lh3.googleusercontent.com/-UjKiveTyTUI/VKJ3RyUC0LI/AAAAAAAAAGc/zxBS9koEx6c/s512-p/nnkjn.png',
+		// 		title: text || 'Hello World!'
+		// 	};
+		// 	return new google.maps.Marker(markerOption);
+		// },
 		codeAddress: function(){
 			var self = this;
 			$("#quoteInfoBlock").removeAttr('hidden');
@@ -214,6 +283,7 @@ window.App = {
 					self.setElement(cost + " ether", 'costEstimate')
 				});
 				//self.setElement("you cannot afford this", 'costEstimate');
+				self.findNearestCar();
 
 			}else{
 				console.log("Problem with destination entered. Please try again.");
