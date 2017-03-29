@@ -24,13 +24,19 @@ var userLoc;
 var directionsDisplay;
 var directionsService;
 var carLocations = [];
+var bestTotalDuration = 0;
+var nearestCar = 0;
+var distances = [];
+var carDirectionsDisplay;
+var carDirectionsService;
 
 window.App = {
 	start: function() {
 		var self = this;
 		directionsDisplay = new google.maps.DirectionsRenderer();
 		directionsService = new google.maps.DirectionsService();
-
+        carDirectionsDisplay = new google.maps.DirectionsRenderer();
+	    carDirectionsService = new google.maps.DirectionsService();
 	 //self.initMap();
 
 	 // Bootstrap the MetaCoin abstraction for Use.
@@ -49,7 +55,7 @@ window.App = {
 	 	}
 
 	 	accounts = accs;
-	 	account = accounts[0];
+	 	account = accounts[0]; 
 
 	 	self.initializeCarRegistry();
 	 });
@@ -92,31 +98,38 @@ window.App = {
 		}
 		return Promise.all(posArr);
 	}).then(function(array){
-		var carNumber = 0;
-		for (var i = array.length - 1; i >= 0; i--) {
-			carLocations[carNumber] = appendMarker(map, parseFloat(array[i][0]), parseFloat(array[i][1]), "car");
-			carNumber++;
 
-		}
-		return array;
-	}).then(function(value) {
+			var carNumber = 0;
+			for (var i = array.length - 1; i >= 0; i--) {
+				carLocations[carNumber] = appendMarker(map, parseFloat(array[i][0]), parseFloat(array[i][1]), "car");
+				self.calcTime(carLocations[carNumber].position, carNumber, distances);
+				carNumber++;	
+			}
+			return array;
+		}).then(function(value) {
 		//self.setStatus(value);
 	}).catch(function(e) {
 		console.log(e);
 		//self.setStatus("error");
 	});
-  },
+},
 
-  findNearestCar: function(){
-  var self = this;
-  var mintime = -1;
-  var carNumber;
-  
-  for (var k = 0; k < carLocations.length; k++){
-  	var pos1 = pos;
+findNearestCar: function(){
+	var self = this;
+	var mintime = -1;
+	var carNumber = 0;
+	var curTime = 0;
+
+	for (var k = 0; k < distances.length; k++){
+		curTime = distances[k];
+  	/*var pos1 = pos;
   	var pos2 = carLocations[k].position;
-  	var curTime = self.calcTime(pos1, pos2);
-
+  	self.calcTime(pos1, pos2);
+  	curTime = bestTotalDuration;
+  	console.log("We are looking at a different car now:");
+  	console.log("Here is the position of the car: " + pos2);
+  	console.log("The time for this car: " + curTime);
+  	console.log("bestTotalDuration: " + bestTotalDuration);*/
   	if (mintime == -1){
   		mintime = curTime;
   		carNumber = k;
@@ -133,42 +146,45 @@ window.App = {
   		}
   	}
   }
+  nearestCar = carNumber;
 
+},
 
-  },
+calcTime: function(pos1, carNumber, distances){
+	var self = this;
+	var pos2 = pos;
 
-  calcTime: function(pos1, pos2){
-
-  	var carDirectionsDisplay = new google.maps.DirectionsRenderer();
-	var carDirectionsService = new google.maps.DirectionsService();
-
-
-  	var request = {
-				origin: pos1,
-				destination: pos2,
-				travelMode: 'DRIVING'
-			};
+	console.log("Pos1: " +pos1);
+	console.log("Pos2: " + pos2);
+	var request = {
+		origin: pos1,
+		destination: pos2,
+		travelMode: 'DRIVING'
+	};
 
 	carDirectionsService.route(request, function(result, status) {
-			if (status == 'OK') {
+		if (status == 'OK') {
 		//		console.log("Your directions are being rendered");
-				carDirectionsDisplay.setDirections(result);
+		var totalDuration = 0;
+		carDirectionsDisplay.setDirections(result);
 
-				var legs = result.routes[0].legs;
-				var totalDuration = 0;
-				for(var i=0; i<legs.length; ++i) {
-					totalDuration += legs[i].duration.value;
-				}
-				totalDuration = Math.ceil(totalDuration / 60);
+		var legs = result.routes[0].legs;
+		var totalDuration = 0;
+		for(var i=0; i<legs.length; ++i) {
+			totalDuration += legs[i].duration.value;
+		}
+		console.log("totalDuration: " + totalDuration/60);
+		totalDuration = Math.ceil(totalDuration / 60);
 				//self.setElement("you cannot afford this", 'costEstimate');
-				return totalDuration;
-
+				console.log("We are now in CALCTIME!!!");
+				console.log("calculated duration for "+ pos1 +": " + totalDuration);
+				distances[carNumber] = totalDuration;
 			}else{
 				console.log("Problem with calculating time of cars");
 			}
 		});
 
-  },
+},
 
 
   /*
@@ -289,7 +305,7 @@ window.App = {
 				console.log("Problem with destination entered. Please try again.");
 			}
 		});
-	}
+}
 
 /*
   refreshBalance: function() {
