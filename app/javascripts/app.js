@@ -24,11 +24,13 @@ var userLoc;
 var directionsDisplay;
 var directionsService;
 var carLocations = [];
+var carEthAddresses = [];
 var bestTotalDuration = 0;
 var nearestCar = 0;
 var distances = [];
 var carDirectionsDisplay;
 var carDirectionsService;
+var globalCostInEth;
 
 window.App = {
 	start: function() {
@@ -92,9 +94,9 @@ window.App = {
 		console.log(num);
 		var posArr = [];
 		for (var i = 0; i < num; i++) {
-			var pos = register.getLocationByIndex.call(i, {from: account});
-			console.log(pos);
-			posArr.push(pos);
+			var posCar = register.getLocationByIndex.call(i, {from: account});
+			console.log(posCar);
+			posArr.push(posCar);
 		}
 		return Promise.all(posArr);
 	}).then(function(array){
@@ -102,6 +104,7 @@ window.App = {
 			var carNumber = 0;
 			for (var i = array.length - 1; i >= 0; i--) {
 				carLocations[carNumber] = appendMarker(map, parseFloat(array[i][0]), parseFloat(array[i][1]), "car");
+				carEthAddresses[carNumber] = array[i][2];
 				self.calcTime(carLocations[carNumber].position, carNumber, distances);
 				carNumber++;	
 			}
@@ -154,7 +157,7 @@ calcTime: function(pos1, carNumber, distances){
 	var self = this;
 	var pos2 = pos;
 
-	console.log("Pos1: " +pos1);
+	console.log("Pos1: " + pos1);
 	console.log("Pos2: " + pos2);
 	var request = {
 		origin: pos1,
@@ -187,7 +190,23 @@ calcTime: function(pos1, carNumber, distances){
 },
 
 confirmRide: function(){
-	alert("You have confirmed a ride! Your car is on it's way :)")
+	var self = this;
+	alert("You have confirmed a ride! Your car is on it's way :)");
+	
+	var register;
+	CarRegistry.deployed().then(function(instance) {
+		register = instance;
+		var costInWei = 1000000000000000000*globalCostInEth;
+		return register.confirmTrip(carEthAddresses[nearestCar], {from: accounts[2], value: costInWei})
+	}).then(function(tx_id){
+		console.log("transaction completed!");
+		return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
+	}).then(function(response){
+		console.log(response);
+	}).catch(function(e) {
+		console.log(e);
+	});
+	
 },
 
 
@@ -300,6 +319,7 @@ confirmRide: function(){
 				}).then(function(rateInfo) {
 					return (parseFloat(rateInfo[0]) + (parseFloat(rateInfo[1])*totalDuration) + (parseFloat(rateInfo[2]*totalDistance)))/50.10;
 				}).then(function(cost) {
+					globalCostInEth = cost;
 					self.setElement(cost + " ether", 'costEstimate')
 				});
 				document.getElementById("confirmButton").style.visibility = 'visible';
@@ -398,7 +418,7 @@ window.initMap = function() {
 			 map.setCenter(pos);
 			}, function() {
 				handleLocationError(true, infoWindow, map.getCenter());
-			});
+			}, {timeout: 10000});
 		  	google.maps.event.addDomListener(window, 'load', initializeAutoComplete);
 
 		  } else {

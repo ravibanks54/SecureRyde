@@ -37,11 +37,11 @@ contract CarRegistry {
         return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
     }
 
-    function getLocationByIndex(uint i) public returns (string, string){
+    function getLocationByIndex(uint i) public returns (string, string, address){
         if (i >= registeredCars.length){
             throw;
         }
-        return returnPosition(registeredCars[i]);
+        return (carDatabase[registeredCars[i]].lat, carDatabase[registeredCars[i]].long, registeredCars[i]);
     }
 
     function getNumberOfCars() public returns (uint){
@@ -56,6 +56,18 @@ contract CarRegistry {
         Position clientPos;
         Position destPos;
         bool confirmed;
+    }
+
+    function confirmTrip(address carAddr) payable public {
+        if (msg.value == 0){
+            throw;
+        }
+        escrow[carAddr] = msg.value;
+        customers[carAddr].confirmed = true;    //Once Trip is finished, clear this
+    } 
+
+    function confirmPayment(address carAddr) public returns (uint) {
+        return escrow[carAddr];
     }
 /*
     function joinCarRegistry(string initLat, string initLong) public {
