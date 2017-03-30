@@ -186,6 +186,10 @@ calcTime: function(pos1, carNumber, distances){
 
 },
 
+confirmRide: function(){
+	alert("You have confirmed a ride! Your car is on it's way :)")
+},
+
 
   /*
   initMap: function(){
@@ -298,6 +302,7 @@ calcTime: function(pos1, carNumber, distances){
 				}).then(function(cost) {
 					self.setElement(cost + " ether", 'costEstimate')
 				});
+				document.getElementById("confirmButton").style.visibility = 'visible';
 				//self.setElement("you cannot afford this", 'costEstimate');
 				self.findNearestCar();
 
