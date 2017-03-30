@@ -31,6 +31,7 @@ var distances = [];
 var carDirectionsDisplay;
 var carDirectionsService;
 var globalCostInEth;
+var originialPosition;
 
 window.App = {
 	start: function() {
@@ -191,7 +192,6 @@ calcTime: function(pos1, carNumber, distances){
 
 confirmRide: function(){
 	var self = this;
-	alert("You have confirmed a ride! Your car is on it's way :)");
 	
 	var register;
 	CarRegistry.deployed().then(function(instance) {
@@ -206,7 +206,61 @@ confirmRide: function(){
 	}).catch(function(e) {
 		console.log(e);
 	});
+
+	alert("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
+	document.getElementById("carControlBlock").style.display = 'block';
+	document.getElementById("rydeStatus").innerHTML = 'Hit the "Begin Your Ryde" button to start the session.';
+	document.getElementById("send").disabled = true;
+	document.getElementById("confirmButton").disabled = true;
+	$("#carControlBlock").removeAttr('hidden');
+	document.getElementById("startSessionButton").disabled = false;
+	document.getElementById("lockCarButton").disabled = true;
+	document.getElementById("unlockCarButton").disabled = true;
+	document.getElementById("endSessionButton").disabled = true;
+	originialPosition = carLocations[nearestCar].position;
+	carLocations[nearestCar].setPosition(pos);
+
 	
+},
+
+startSession: function(){
+	//alert("You have begun your ryde!");
+	document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
+	document.getElementById("unlockCarButton").disabled = false;
+	document.getElementById("endSessionButton").disabled = false;
+	document.getElementById("startSessionButton").disabled = true;;	
+},
+
+lockCar: function(){
+	//alert("You have LOCKED your vehicle!");
+	document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
+	document.getElementById("unlockCarButton").disabled = false;
+	document.getElementById("lockCarButton").disabled = true;
+
+},
+
+unlockCar: function(){
+	//alert("You have UNLOCKED your vehicle!");
+	document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is UNLOCKED';
+	document.getElementById("unlockCarButton").disabled = true;
+	document.getElementById("lockCarButton").disabled = false;
+
+},
+
+endSession: function(){
+	alert("You have ended your ryde!");
+	document.getElementById("lockCarButton").disabled = true;
+	document.getElementById("unlockCarButton").disabled = true;
+	document.getElementById("endSessionButton").disabled = true;
+	document.getElementById("startSessionButton").disabled = true;
+	document.getElementById("carControlBlock").style.display = 'none';
+	document.getElementById("quoteInfoBlock").style.display = 'none';
+	document.getElementById("send").disabled = false;
+	document.getElementById("confirmButton").disabled = false;
+	carLocations[nearestCar].setPosition(originialPosition);
+	for(var i = 0; i < carLocations.length; i++){
+		carLocations[i].setMap(map);
+	}
 },
 
 
@@ -324,6 +378,7 @@ confirmRide: function(){
 				});
 				document.getElementById("confirmButton").style.visibility = 'visible';
 				//self.setElement("you cannot afford this", 'costEstimate');
+				document.getElementById("quoteInfoBlock").style.display = 'block';
 				self.findNearestCar();
 
 			}else{

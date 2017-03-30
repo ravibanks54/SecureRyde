@@ -11,8 +11,8 @@
   </script>
 </head>
 <body>
-  <h1>Securyde</h1>
-  <h2>Uber for the Blockchain</h2>
+  <h1>SecuRyde</h1>
+  <h2>Driverless Vehicle Technology for the Blockchain</h2>
   <h3>You have <span class="black"><span id="balance"></span> all the money in the world</span></h3>
   <div id="map"></div>
   <br>
@@ -30,9 +30,18 @@
     <div class="quoteDescriptor">Distance: <div id="distanceEstimate" class="black quoteInfo"> </div></div><br><br>
     <div class="quoteDescriptor">Time: <div id="timeEstimate" class="black quoteInfo"></div></div><br><br>
     <div class="quoteDescriptor">Cost: <div id="costEstimate" class="black quoteInfo"></div></div><br><br>
-    <div class="quoteDescriptor"> <button id="confirmButton"  onclick="App.confirmRide()">Secure My Ride</button></div></div><br><br>
+    <div class="quoteDescriptor"> <button id="confirmButton"  onclick="App.confirmRide()">Secure My Ryde</button></div></div><br><br>
   </div>
-
+  <br><br><br><br>
+   <div id="carControlBlock" hidden="true">
+     <div class="rideDescriptor">Ryde Status: <div id="rydeStatus" class="black quoteInfo"></div></div><br><br>
+    <div class="rideDescriptor"> <button id="startSessionButton"  onclick="App.startSession()">BEGIN MY RYDE</button></div><br><br>
+    <div class="rideDescriptor"> <button id="lockCarButton"  onclick="App.lockCar()">LOCK</button></div><br><br>
+    <div class="rideDescriptor"> <button id="unlockCarButton"  onclick="App.unlockCar()">UNLOCK</button></div><br><br>
+    <div class="rideDescriptor"> <button id="endSessionButton"  onclick="App.endSession()">END MY RYDE</button></div><br><br>
+  </div>
+  <!--
   <span class="hint"><strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>
+  -->
 </body>
 </html>
