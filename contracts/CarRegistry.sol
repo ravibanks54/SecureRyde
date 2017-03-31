@@ -67,19 +67,13 @@ contract CarRegistry {
         if (msg.value == 0){
             throw;
         }
-        bool debug = true;
-        if (debug == true){
-            escrow[carAddr] = msg.value;
-            trips[carAddr].client = msg.sender;
-            trips[carAddr].tripStatus = 1;  //Trip Pending
-        }else{
-            escrow[carAddr] = msg.value;
-            trips[carAddr].client = msg.sender;
-            trips[carAddr].isUnlocked = false;
-            trips[carAddr].clientPos = Position(custLat, custLong, true);
-            trips[carAddr].destPos = Position(destLat, destLong, true);
-            trips[carAddr].tripStatus = 1;  //Trip Pending
-        }
+
+        escrow[carAddr] = msg.value;
+        trips[carAddr].client = msg.sender;
+        trips[carAddr].isUnlocked = false;
+        trips[carAddr].clientPos = Position(custLat, custLong, true);
+        trips[carAddr].destPos = Position(destLat, destLong, true);
+        trips[carAddr].tripStatus = 1;  //Trip Pending
     }
 
     function startRide(address carAddr) public {
