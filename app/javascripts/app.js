@@ -194,12 +194,13 @@ confirmRide: function(){
 	var self = this;
 	
 	var register;
+	alert("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
 	CarRegistry.deployed().then(function(instance) {
 		register = instance;
 		var costInWei = 1000000000000000000*globalCostInEth;
-		return register.confirmTrip(carEthAddresses[nearestCar], {from: accounts[2], value: costInWei})
+		return register.confirmTrip(carEthAddresses[nearestCar], null, null, null, null, {from: accounts[2], value: costInWei})
 	}).then(function(tx_id){
-		console.log("transaction completed!");
+		console.log("Confirm Ride transaction completed!");
 		return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
 	}).then(function(response){
 		console.log(response);
@@ -207,7 +208,6 @@ confirmRide: function(){
 		console.log(e);
 	});
 
-	alert("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
 	document.getElementById("carControlBlock").style.display = 'block';
 	document.getElementById("rydeStatus").innerHTML = 'Hit the "Begin Your Ryde" button to start the session.';
 	document.getElementById("send").disabled = true;
@@ -225,6 +225,17 @@ confirmRide: function(){
 
 startSession: function(){
 	//alert("You have begun your ryde!");
+	CarRegistry.deployed().then(function(instance) {
+		register = instance;
+		return register.confirmTrip(carEthAddresses[nearestCar], {from: accounts[2], value: costInWei})
+	}).then(function(tx_id){
+		console.log("Start Ride transaction completed!");
+		return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
+	}).then(function(response){
+		console.log(response);
+	}).catch(function(e) {
+		console.log(e);
+	});
 	document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
 	document.getElementById("unlockCarButton").disabled = false;
 	document.getElementById("endSessionButton").disabled = false;
@@ -233,6 +244,14 @@ startSession: function(){
 
 lockCar: function(){
 	//alert("You have LOCKED your vehicle!");
+	CarRegistry.deployed().then(function(instance) {
+		register = instance;
+		return register.toggleLock(carEthAddresses[nearestCar], false, {from: accounts[2]})
+	}).then(function(tx_id){
+		console.log("Lock transaction completed!");
+	}).catch(function(e) {
+		console.log(e);
+	});
 	document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
 	document.getElementById("unlockCarButton").disabled = false;
 	document.getElementById("lockCarButton").disabled = true;
@@ -241,6 +260,14 @@ lockCar: function(){
 
 unlockCar: function(){
 	//alert("You have UNLOCKED your vehicle!");
+	CarRegistry.deployed().then(function(instance) {
+		register = instance;
+		return register.toggleLock(carEthAddresses[nearestCar], true, {from: accounts[2]})
+	}).then(function(tx_id){
+		console.log("Unlock transaction compleeted");
+	}).catch(function(e) {
+		console.log(e);
+	});
 	document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is UNLOCKED';
 	document.getElementById("unlockCarButton").disabled = true;
 	document.getElementById("lockCarButton").disabled = false;
@@ -249,6 +276,14 @@ unlockCar: function(){
 
 endSession: function(){
 	alert("You have ended your ryde!");
+	CarRegistry.deployed().then(function(instance) {
+		register = instance;
+		return register.finishRide(carEthAddresses[nearestCar], {from: accounts[2]})
+	}).then(function(tx_id){
+		console.log("Finish ride transaction completed.");
+	}).catch(function(e) {
+		console.log(e);
+	});
 	document.getElementById("lockCarButton").disabled = true;
 	document.getElementById("unlockCarButton").disabled = true;
 	document.getElementById("endSessionButton").disabled = true;

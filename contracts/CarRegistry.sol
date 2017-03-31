@@ -3,9 +3,9 @@ pragma solidity ^0.4.8;
 contract CarRegistry {
 
     mapping(address => Position) carDatabase;   //Maps car addresses to their GPS coordinates
-    mapping(address => uint) costs;     //Maps user addresses to amount they owe
+    //mapping(address => uint) costs;     //Maps user addresses to amount they owe
     mapping(address => uint) escrow;    //Maps car addresses to amount they are owed
-    mapping(address => TripPosition) customers; //Maps car addresses to client's current location
+    mapping(address => TripPosition) trips; //Maps car addresses to client's current location and destination
     address[] registeredCars;
 
     string baseRate;
@@ -19,8 +19,10 @@ contract CarRegistry {
         registeredCars[registeredCars.length++] = 0xb063c23249bd719b4e5217b507570724ccbdbff1;
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].lat = "40.4317";
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].long = "-74.4050";
+        carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].isValid = true;
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].lat = "40.594";
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].long = "-74.6049";
+        carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].isValid = true;
         baseRate = "1.05";
         dollarsPerMile = "1.15";
         dollarsPerMinute = "0.153";
@@ -30,6 +32,7 @@ contract CarRegistry {
     struct Position {
 		string lat;
 		string long;
+        bool isValid;
 	}
 
     function returnPosition(address carAddress) public returns (string, string){
@@ -53,45 +56,84 @@ contract CarRegistry {
     }
 
     struct TripPosition {
+        address client;
         Position clientPos;
         Position destPos;
-        bool confirmed;
+        bool isUnlocked;
+        uint tripStatus; //1 -> Trip Pending, 2 -> Trip In Progress, 3 -> Trip Finished
     }
 
-    function confirmTrip(address carAddr) payable public {
+    function confirmTrip(address carAddr, string custLat, string custLong, string destLat, string destLong) payable public {
         if (msg.value == 0){
             throw;
         }
-        escrow[carAddr] = msg.value;
-        customers[carAddr].confirmed = true;    //Once Trip is finished, clear this
-    } 
+        bool debug = true;
+        if (debug == true){
+            escrow[carAddr] = msg.value;
+            trips[carAddr].client = msg.sender;
+            trips[carAddr].tripStatus = 1;  //Trip Pending
+        }else{
+            escrow[carAddr] = msg.value;
+            trips[carAddr].client = msg.sender;
+            trips[carAddr].isUnlocked = false;
+            trips[carAddr].clientPos = Position(custLat, custLong, true);
+            trips[carAddr].destPos = Position(destLat, destLong, true);
+            trips[carAddr].tripStatus = 1;  //Trip Pending
+        }
+    }
+
+    function startRide(address carAddr) public {
+        if (trips[carAddr].client == msg.sender){
+            trips[carAddr].tripStatus = 2;  //Trip in Progress
+        }
+    }
+
+    function finishRide(address carAddr) public {
+        if (trips[carAddr].client == msg.sender){
+            trips[carAddr].tripStatus = 3;  //Trip Finished
+        }
+    }
+
 
     function confirmPayment(address carAddr) public returns (uint) {
         return escrow[carAddr];
     }
-/*
+
+
+    function toggleLock(address carAddr, bool newLockState) public {    //True unlocks, false locks
+        if (trips[carAddr].tripStatus == 2 && trips[carAddr].client == msg.sender){
+            if (trips[carAddr].isUnlocked != newLockState){
+                trips[carAddr].isUnlocked = newLockState;
+            }
+        }
+    }
+
+//Car Functions:
+
     function joinCarRegistry(string initLat, string initLong) public {
     	if (msg.value > 0) throw;
-    	if (carDatabase[msg.sender] == 0){		//Check if no entry exists
-    		carDatabase[msg.sender].lat = lat;
-            carDatabase[msg.sender].long = long;
-            registeredCars.length++;
-            registeredCars[registeredCars.length - 1] = msg.sender;
-    	}else{
-    		throw;
-    	}
+        if (carDatabase[msg.sender].isValid != false){    //If it already exists, throw
+            throw;
+        }else{
+        	carDatabase[msg.sender].lat = initLat;
+            carDatabase[msg.sender].long = initLong;
+            registeredCars[registeredCars.length++] = msg.sender;
+        }
     }
 
 
     function updatePosition(string newLat, string newLong) public {
         if (msg.value > 0) throw;
-    	if (carDatabase[msg.sender] != 0){
+    	if (carDatabase[msg.sender].isValid != false){   //If it does exist, continue
     		carDatabase[msg.sender].lat = newLat;
             carDatabase[msg.sender].long = newLong;
     	}else{
             throw;
         }
     }
+
+
+    /*
     function requestTripQuote(string clientLat, string clientLong, string destinationLat, string destinationLong) public {    //Returns payment cost and arrival estimate
         if (msg.value > 0) throw;
         address carAddr;
@@ -106,7 +148,7 @@ contract CarRegistry {
         Position clientPos = new Position(clientLat, clientLong);
         Position destPos = new Position(destinationLat, destinationLong);
         TripPosition positions = new TripPosition(clientPos, destPos, false);
-        customers[carAddr] = positions;
+        trips[carAddr] = positions;
 
 
         //Create event here with trip quote and time to arrival
@@ -119,18 +161,18 @@ contract CarRegistry {
     function confirmTrip() payable public returns () {
         if (msg.value == costs[msg.sender]){
             escrow[carAddr] = msg.value;
-            customers[carAddr].confirmed = true;    //Once Trip is finished, clear this
+            trips[carAddr].confirmed = true;    //Once Trip is finished, clear this
         }else{
             throw;
         }
     }
 
     function hasCustomer() public returns (bool){
-        return customers[msg.sender].confirmed == true;
+        return trips[msg.sender].confirmed == true;
     }
 
     function reachedDestination() public{
-        customers[msg.sender] = 0;
+        trips[msg.sender] = 0;
         
     }
 
