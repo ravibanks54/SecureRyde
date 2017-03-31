@@ -38,8 +38,8 @@ window.App = {
 		var self = this;
 		directionsDisplay = new google.maps.DirectionsRenderer();
 		directionsService = new google.maps.DirectionsService();
-        carDirectionsDisplay = new google.maps.DirectionsRenderer();
-	    carDirectionsService = new google.maps.DirectionsService();
+		carDirectionsDisplay = new google.maps.DirectionsRenderer();
+		carDirectionsService = new google.maps.DirectionsService();
 	 //self.initMap();
 
 	 // Bootstrap the MetaCoin abstraction for Use.
@@ -89,19 +89,18 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-		//self.setStatus("Loading");
-		return register.getNumberOfCars.call({from: account});
-	}).then(function(num){
-		console.log(num);
-		var posArr = [];
-		for (var i = 0; i < num; i++) {
-			var posCar = register.getLocationByIndex.call(i, {from: account});
-			console.log(posCar);
-			posArr.push(posCar);
-		}
-		return Promise.all(posArr);
-	}).then(function(array){
-
+			//self.setStatus("Loading");
+			return register.getNumberOfCars.call({from: account});
+		}).then(function(num){
+			console.log(num);
+			var posArr = [];
+			for (var i = 0; i < num; i++) {
+				var posCar = register.getLocationByIndex.call(i, {from: account});
+				console.log(posCar);
+				posArr.push(posCar);
+			}
+			return Promise.all(posArr);
+		}).then(function(array){
 			var carNumber = 0;
 			for (var i = array.length - 1; i >= 0; i--) {
 				carLocations[carNumber] = appendMarker(map, parseFloat(array[i][0]), parseFloat(array[i][1]), "car");
@@ -111,232 +110,196 @@ window.App = {
 			}
 			return array;
 		}).then(function(value) {
-		//self.setStatus(value);
-	}).catch(function(e) {
-		console.log(e);
-		//self.setStatus("error");
-	});
-},
+			//self.setStatus(value);
+		}).catch(function(e) {
+			console.log(e);
+			//self.setStatus("error");
+		});
+	},
 
-findNearestCar: function(){
-	var self = this;
-	var mintime = -1;
-	var carNumber = 0;
-	var curTime = 0;
+	findNearestCar: function(){
+		var self = this;
+		var mintime = -1;
+		var carNumber = 0;
+		var curTime = 0;
 
-	for (var k = 0; k < distances.length; k++){
-		curTime = distances[k];
-  	/*var pos1 = pos;
-  	var pos2 = carLocations[k].position;
-  	self.calcTime(pos1, pos2);
-  	curTime = bestTotalDuration;
-  	console.log("We are looking at a different car now:");
-  	console.log("Here is the position of the car: " + pos2);
-  	console.log("The time for this car: " + curTime);
-  	console.log("bestTotalDuration: " + bestTotalDuration);*/
-  	if (mintime == -1){
-  		mintime = curTime;
-  		carNumber = k;
-  	}
-  	else {
-  		if(mintime > curTime){
-  			carLocations[carNumber].setMap(null);
-  			mintime = curTime;
-  			carNumber = k;
+		for (var k = 0; k < distances.length; k++){
+			curTime = distances[k];
+		  	/*var pos1 = pos;
+		  	var pos2 = carLocations[k].position;
+		  	self.calcTime(pos1, pos2);
+		  	curTime = bestTotalDuration;
+		  	console.log("We are looking at a different car now:");
+		  	console.log("Here is the position of the car: " + pos2);
+		  	console.log("The time for this car: " + curTime);
+		  	console.log("bestTotalDuration: " + bestTotalDuration);*/
+		  	if (mintime == -1){
+		  		mintime = curTime;
+		  		carNumber = k;
+		  	}else {
+		  		if(mintime > curTime){
+		  			carLocations[carNumber].setMap(null);
+		  			mintime = curTime;
+		  			carNumber = k;
 
-  		}
-  		else{
-  			carLocations[k].setMap(null);
-  		}
-  	}
-  }
-  nearestCar = carNumber;
+		  		}else{
+		  			carLocations[k].setMap(null);
+		  		}
+	  		}
+	  }
+	  nearestCar = carNumber;
 
-},
+	},
 
-calcTime: function(pos1, carNumber, distances){
-	var self = this;
-	var pos2 = pos;
+	calcTime: function(pos1, carNumber, distances){
+		var self = this;
+		var pos2 = pos;
 
-	console.log("Pos1: " + pos1);
-	console.log("Pos2: " + pos2);
-	var request = {
-		origin: pos1,
-		destination: pos2,
-		travelMode: 'DRIVING'
-	};
+		console.log("Pos1: " + pos1);
+		console.log("Pos2: " + pos2);
+		var request = {
+			origin: pos1,
+			destination: pos2,
+			travelMode: 'DRIVING'
+		};
 
-	carDirectionsService.route(request, function(result, status) {
-		if (status == 'OK') {
-		//		console.log("Your directions are being rendered");
-		var totalDuration = 0;
-		carDirectionsDisplay.setDirections(result);
+		carDirectionsService.route(request, function(result, status) {
+			if (status == 'OK') {
+				//		console.log("Your directions are being rendered");
+				var totalDuration = 0;
+				carDirectionsDisplay.setDirections(result);
 
-		var legs = result.routes[0].legs;
-		var totalDuration = 0;
-		for(var i=0; i<legs.length; ++i) {
-			totalDuration += legs[i].duration.value;
-		}
-		console.log("totalDuration: " + totalDuration/60);
-		totalDuration = Math.ceil(totalDuration / 60);
+				var legs = result.routes[0].legs;
+				var totalDuration = 0;
+				for(var i=0; i<legs.length; ++i) {
+					totalDuration += legs[i].duration.value;
+				}
+				console.log("totalDuration: " + totalDuration/60);
+				totalDuration = Math.ceil(totalDuration / 60);
 				//self.setElement("you cannot afford this", 'costEstimate');
 				console.log("We are now in CALCTIME!!!");
 				console.log("calculated duration for "+ pos1 +": " + totalDuration);
 				distances[carNumber] = totalDuration;
 			}else{
-				console.log("Problem with calculating time of cars");
+					console.log("Problem with calculating time of cars");
 			}
 		});
 
-},
+	},
 
-confirmRide: function(){
-	var self = this;
-	
-	var register;
-	alert("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
-	CarRegistry.deployed().then(function(instance) {
-		register = instance;
-		var costInWei = 1000000000000000000*globalCostInEth;
-		return register.confirmTrip(carEthAddresses[nearestCar], null, null, null, null, {from: accounts[2], value: costInWei})
-	}).then(function(tx_id){
-		console.log("Confirm Ride transaction completed!");
-		return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
-	}).then(function(response){
-		console.log(response);
-	}).catch(function(e) {
-		console.log(e);
-	});
+	confirmRide: function(){
+		var self = this;
+		var register;
+		alert("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
+		CarRegistry.deployed().then(function(instance) {
+			register = instance;
+			var costInWei = 1000000000000000000*globalCostInEth;
+			return register.confirmTrip(carEthAddresses[nearestCar], null, null, null, null, {from: accounts[2], value: costInWei})
+		}).then(function(tx_id){
+			console.log("Confirm Ride transaction completed!");
+			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
+		}).then(function(response){
+			console.log(response);
+		}).catch(function(e) {
+			console.log(e);
+		});
 
-	document.getElementById("carControlBlock").style.display = 'block';
-	document.getElementById("rydeStatus").innerHTML = 'Hit the "Begin Your Ryde" button to start the session.';
-	document.getElementById("send").disabled = true;
-	document.getElementById("confirmButton").disabled = true;
-	$("#carControlBlock").removeAttr('hidden');
-	document.getElementById("startSessionButton").disabled = false;
-	document.getElementById("lockCarButton").disabled = true;
-	document.getElementById("unlockCarButton").disabled = true;
-	document.getElementById("endSessionButton").disabled = true;
-	originialPosition = carLocations[nearestCar].position;
-	carLocations[nearestCar].setPosition(pos);
+		document.getElementById("carControlBlock").style.display = 'block';
+		document.getElementById("rydeStatus").innerHTML = 'Hit the "Begin Your Ryde" button to start the session.';
+		document.getElementById("send").disabled = true;
+		document.getElementById("confirmButton").disabled = true;
+		$("#carControlBlock").removeAttr('hidden');
+		document.getElementById("startSessionButton").disabled = false;
+		document.getElementById("lockCarButton").disabled = true;
+		document.getElementById("unlockCarButton").disabled = true;
+		document.getElementById("endSessionButton").disabled = true;
+		originialPosition = carLocations[nearestCar].position;
+		carLocations[nearestCar].setPosition(pos);
 
-	
-},
+		
+	},
 
-startSession: function(){
-	//alert("You have begun your ryde!");
-	CarRegistry.deployed().then(function(instance) {
-		register = instance;
-		return register.confirmTrip(carEthAddresses[nearestCar], {from: accounts[2], value: costInWei})
-	}).then(function(tx_id){
-		console.log("Start Ride transaction completed!");
-		return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
-	}).then(function(response){
-		console.log(response);
-	}).catch(function(e) {
-		console.log(e);
-	});
-	document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
-	document.getElementById("unlockCarButton").disabled = false;
-	document.getElementById("endSessionButton").disabled = false;
-	document.getElementById("startSessionButton").disabled = true;;	
-},
+	startSession: function(){
+		//alert("You have begun your ryde!");
+		CarRegistry.deployed().then(function(instance) {
+			register = instance;
+			return register.confirmTrip(carEthAddresses[nearestCar], {from: accounts[2], value: costInWei})
+		}).then(function(tx_id){
+			console.log("Start Ride transaction completed!");
+			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
+		}).then(function(response){
+			console.log(response);
+		}).catch(function(e) {
+			console.log(e);
+		});
+		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
+		document.getElementById("unlockCarButton").disabled = false;
+		document.getElementById("endSessionButton").disabled = false;
+		document.getElementById("startSessionButton").disabled = true;;	
+	},
 
-lockCar: function(){
-	//alert("You have LOCKED your vehicle!");
-	CarRegistry.deployed().then(function(instance) {
-		register = instance;
-		return register.toggleLock(carEthAddresses[nearestCar], false, {from: accounts[2]})
-	}).then(function(tx_id){
-		console.log("Lock transaction completed!");
-	}).catch(function(e) {
-		console.log(e);
-	});
-	document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
-	document.getElementById("unlockCarButton").disabled = false;
-	document.getElementById("lockCarButton").disabled = true;
+	lockCar: function(){
+		//alert("You have LOCKED your vehicle!");
+		CarRegistry.deployed().then(function(instance) {
+			register = instance;
+			return register.toggleLock(carEthAddresses[nearestCar], false, {from: accounts[2]})
+		}).then(function(tx_id){
+			console.log("Lock transaction completed!");
+		}).catch(function(e) {
+			console.log(e);
+		});
+		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
+		document.getElementById("unlockCarButton").disabled = false;
+		document.getElementById("lockCarButton").disabled = true;
 
-},
+	},
 
-unlockCar: function(){
-	//alert("You have UNLOCKED your vehicle!");
-	CarRegistry.deployed().then(function(instance) {
-		register = instance;
-		return register.toggleLock(carEthAddresses[nearestCar], true, {from: accounts[2]})
-	}).then(function(tx_id){
-		console.log("Unlock transaction compleeted");
-	}).catch(function(e) {
-		console.log(e);
-	});
-	document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is UNLOCKED';
-	document.getElementById("unlockCarButton").disabled = true;
-	document.getElementById("lockCarButton").disabled = false;
+	unlockCar: function(){
+		//alert("You have UNLOCKED your vehicle!");
+		CarRegistry.deployed().then(function(instance) {
+			register = instance;
+			return register.toggleLock(carEthAddresses[nearestCar], true, {from: accounts[2]})
+		}).then(function(tx_id){
+			console.log("Unlock transaction compleeted");
+		}).catch(function(e) {
+			console.log(e);
+		});
+		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is UNLOCKED';
+		document.getElementById("unlockCarButton").disabled = true;
+		document.getElementById("lockCarButton").disabled = false;
 
-},
+	},
 
-endSession: function(){
-	alert("You have ended your ryde!");
-	CarRegistry.deployed().then(function(instance) {
-		register = instance;
-		return register.finishRide(carEthAddresses[nearestCar], {from: accounts[2]})
-	}).then(function(tx_id){
-		console.log("Finish ride transaction completed.");
-	}).catch(function(e) {
-		console.log(e);
-	});
-	document.getElementById("lockCarButton").disabled = true;
-	document.getElementById("unlockCarButton").disabled = true;
-	document.getElementById("endSessionButton").disabled = true;
-	document.getElementById("startSessionButton").disabled = true;
-	document.getElementById("carControlBlock").style.display = 'none';
-	document.getElementById("quoteInfoBlock").style.display = 'none';
-	document.getElementById("send").disabled = false;
-	document.getElementById("confirmButton").disabled = false;
-	carLocations[nearestCar].setPosition(originialPosition);
-	for(var i = 0; i < carLocations.length; i++){
-		carLocations[i].setMap(map);
-	}
-},
+	endSession: function(){
+		alert("You have ended your ryde!");
+		CarRegistry.deployed().then(function(instance) {
+			register = instance;
+			return register.finishRide(carEthAddresses[nearestCar], {from: accounts[2]})
+		}).then(function(tx_id){
+			console.log("Finish ride transaction completed.");
+		}).catch(function(e) {
+			console.log(e);
+		});
+		document.getElementById("lockCarButton").disabled = true;
+		document.getElementById("unlockCarButton").disabled = true;
+		document.getElementById("endSessionButton").disabled = true;
+		document.getElementById("startSessionButton").disabled = true;
+		document.getElementById("carControlBlock").style.display = 'none';
+		document.getElementById("quoteInfoBlock").style.display = 'none';
+		document.getElementById("send").disabled = false;
+		document.getElementById("confirmButton").disabled = false;
+		carLocations[nearestCar].setPosition(originialPosition);
+		for(var i = 0; i < carLocations.length; i++){
+			carLocations[i].setMap(map);
+		}
+	},
 
-
-  /*
-  initMap: function(){
-  		var self = this;
-		  var map = new google.maps.Map(document.getElementById('map'), {
-			 center: {lat: 40.521, lng: -74.4623},
-			 zoom: 6
-		  });
-		  var infoWindow = new google.maps.InfoWindow({map: map});
-
-		  // Try HTML5 geolocation.
-		  if (navigator.geolocation) {
-			 navigator.geolocation.getCurrentPosition(function(position) {
-				var pos = {
-				  lat: position.coords.latitude,
-				  lng: position.coords.longitude
-				};
-
-				var userLoc = new google.maps.Marker({
-				position: pos,
-				map: map
-			 });
-			 self.appendMarker(map, 40.4317, -74.4050, "Car 1");
-			 self.appendMarker(map, 40.594, -74.6049, "Car 2");
-				map.setCenter(pos);
-			 }, function() {
-				self.handleLocationError(true, infoWindow, map.getCenter());
-			 });
-		  } else {
-			 // Browser doesn't support Geolocation
-			 self.handleLocationError(false, infoWindow, map.getCenter());
-		  }
-		},*/
-		handleLocationError: function(browserHasGeolocation, infoWindow, pos) {
+	handleLocationError: function(browserHasGeolocation, infoWindow, pos) {
 			infoWindow.setPosition(pos);
 			infoWindow.setContent(browserHasGeolocation ?
 				'Error: The Geolocation service failed.' :
 				'Error: Your browser doesn\'t support geolocation.');
-		},
+	},
 
 		// appendMarker: function(map, latitude, longitude, text) {
 		// 	var pos = {lat: latitude, lng: longitude};
@@ -420,45 +383,7 @@ endSession: function(){
 				console.log("Problem with destination entered. Please try again.");
 			}
 		});
-}
-
-/*
-  refreshBalance: function() {
-	 var self = this;
-
-	 var meta;
-	 MetaCoin.deployed().then(function(instance) {
-		meta = instance;
-		return meta.getBalance.call(account, {from: account});
-	 }).then(function(value) {
-		var balance_element = document.getElementById("balance");
-		balance_element.innerHTML = value.valueOf();
-	 }).catch(function(e) {
-		console.log(e);
-		self.setStatus("Error getting balance; see log.");
-	 });
-
-  
-
-  sendCoin: function() {
-	 var self = this;
-
-	 var amount = parseInt(document.getElementById("amount").value);
-	 var receiver = document.getElementById("receiver").value;
-
-	 this.setStatus("Initiating transaction... (please wait)");
-
-	 var meta;
-	 MetaCoin.deployed().then(function(instance) {
-		meta = instance;
-		return meta.sendCoin(receiver, amount, {from: account});
-	 }).then(function() {
-		self.setStatus("Transaction complete!");
-		self.refreshBalance();
-	 }).catch(function(e) {
-		console.log(e);
-		self.setStatus("Error sending coin; see log.");
-	});*/
+	}
 };
 
 window.addEventListener('load', function() {
@@ -537,37 +462,3 @@ window.initMap = function() {
 			};
 			return new google.maps.Marker(markerOption);
 		}
-
-/*
-function initMap() {
-		  var map = new google.maps.Map(document.getElementById('map'), {
-			 center: {lat: 40.521, lng: -74.4623},
-			 zoom: 6
-		  });
-		  var infoWindow = new google.maps.InfoWindow({map: map});
-
-		  // Try HTML5 geolocation.
-		  if (navigator.geolocation) {
-			 navigator.geolocation.getCurrentPosition(function(position) {
-				var pos = {
-				  lat: position.coords.latitude,
-				  lng: position.coords.longitude
-				};
-
-				var userLoc = new google.maps.Marker({
-				position: pos,
-				map: map
-			 });
-			 appendMarker(map, 40.4317, -74.4050, "Car 1");
-			 appendMarker(map, 40.594, -74.6049, "Car 2");
-				map.setCenter(pos);
-			 }, function() {
-				handleLocationError(true, infoWindow, map.getCenter());
-			 });
-		  } else {
-			 // Browser doesn't support Geolocation
-			 handleLocationError(false, infoWindow, map.getCenter());
-		  }
-		}
-
-		*/
