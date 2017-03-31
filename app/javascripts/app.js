@@ -59,6 +59,9 @@ window.App = {
 
 	 	accounts = accs;
 	 	account = accounts[0]; 
+	 	var balance = web3.fromWei(web3.eth.getBalance(accs[2]), "ether")
+	 	self.setElement(balance, 'balance');
+
 
 	 	self.initializeCarRegistry();
 	 });
@@ -190,13 +193,13 @@ window.App = {
 	confirmRide: function(){
 		var self = this;
 		var register;
-		alert("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
+		console.log("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
 			var costInWei = 1000000000000000000*globalCostInEth;
 			var destLatString = destination.geometry.location.lat.toString();
 			var destLongString = destination.geometry.location.lng.toString();
-			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei})
+			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei, gas: 10000000, gasPrice: web3.toWei(300, 'gwei')})
 		}).then(function(tx_id){
 			console.log("Confirm Ride transaction completed!");
 			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
@@ -398,6 +401,7 @@ window.addEventListener('load', function() {
 		console.warn("No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
 	 // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
 	 window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+
 	}
 
 	$('#address').keydown(function (event) {
