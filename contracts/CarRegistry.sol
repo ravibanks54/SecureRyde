@@ -105,7 +105,6 @@ contract CarRegistry {
 //Car Functions:
 
     function joinCarRegistry(string initLat, string initLong) public {
-    	if (msg.value > 0) throw;
         if (carDatabase[msg.sender].isValid != false){    //If it already exists, throw
             throw;
         }else{
@@ -117,7 +116,6 @@ contract CarRegistry {
 
 
     function updatePosition(string newLat, string newLong) public {
-        if (msg.value > 0) throw;
     	if (carDatabase[msg.sender].isValid != false){   //If it does exist, continue
     		carDatabase[msg.sender].lat = newLat;
             carDatabase[msg.sender].long = newLong;

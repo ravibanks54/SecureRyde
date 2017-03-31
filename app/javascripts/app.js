@@ -194,9 +194,9 @@ window.App = {
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
 			var costInWei = 1000000000000000000*globalCostInEth;
-			var destLatString = results[0].geometry.location.lat.toString();
-			var destLongString = results[0].geometry.location.long.toString();
-			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.long.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei})
+			var destLatString = destination.geometry.location.lat.toString();
+			var destLongString = destination.geometry.location.lng.toString();
+			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei})
 		}).then(function(tx_id){
 			console.log("Confirm Ride transaction completed!");
 			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
