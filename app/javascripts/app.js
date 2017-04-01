@@ -199,7 +199,9 @@ window.App = {
 			var costInWei = 1000000000000000000*globalCostInEth;
 			var destLatString = destination.geometry.location.lat.toString();
 			var destLongString = destination.geometry.location.lng.toString();
-			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei, gas: 10000000, gasPrice: web3.toWei(300, 'gwei')})
+			//	return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei, gas: 10000000, gasPrice: web3.toWei(300, 'gwei')})
+
+			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei})
 		}).then(function(tx_id){
 			console.log("Confirm Ride transaction completed!");
 			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
