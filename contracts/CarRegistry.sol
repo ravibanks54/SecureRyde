@@ -11,7 +11,9 @@ contract CarRegistry {
     string baseRate;
     string dollarsPerMile;
     string dollarsPerMinute;
-
+    /*
+    "0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20", "40.4317", "-74.4050", "40.594", "-74.6049"
+    */
     event TripQuoted(uint tripCost, uint timeToArrival);
     /* Constructor */
     function CarRegistry(){
@@ -69,11 +71,8 @@ contract CarRegistry {
         }
 
         escrow[carAddr] = msg.value;
-        trips[carAddr].client = msg.sender;
-        trips[carAddr].isUnlocked = false;
-        trips[carAddr].clientPos = Position(custLat, custLong, true);
-        trips[carAddr].destPos = Position(destLat, destLong, true);
-        trips[carAddr].tripStatus = 1;  //Trip Pending
+        trips[carAddr] = TripPosition(msg.sender, Position(custLat, custLong, true), Position(destLat, destLong, true), false, 1);
+
     }
 
     function startRide(address carAddr) public {
