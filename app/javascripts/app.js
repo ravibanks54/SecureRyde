@@ -197,11 +197,8 @@ window.App = {
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
 			var costInWei = 1000000000000000000*globalCostInEth;
-			var destLatString = destination.geometry.location.lat.toString();
-			var destLongString = destination.geometry.location.lng.toString();
 			//	return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei, gas: 10000000, gasPrice: web3.toWei(300, 'gwei')})
-
-			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei})
+			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), {from: accounts[2], value: costInWei, gas: 167045})
 		}).then(function(tx_id){
 			console.log("Confirm Ride transaction completed!");
 			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
@@ -228,9 +225,13 @@ window.App = {
 
 	startSession: function(){
 		//alert("You have begun your ryde!");
+		var self = this;
+		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			return register.confirmTrip(carEthAddresses[nearestCar], {from: accounts[2], value: costInWei})
+			var destLatString = destination.geometry.location.lat.toString();
+			var destLongString = destination.geometry.location.lng.toString();
+			return register.startRide(carEthAddresses[nearestCar], destLatString, destLongString, {from: accounts[2]})
 		}).then(function(tx_id){
 			console.log("Start Ride transaction completed!");
 			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
@@ -247,6 +248,8 @@ window.App = {
 
 	lockCar: function(){
 		//alert("You have LOCKED your vehicle!");
+		var self = this;
+		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
 			return register.toggleLock(carEthAddresses[nearestCar], false, {from: accounts[2]})
@@ -263,6 +266,8 @@ window.App = {
 
 	unlockCar: function(){
 		//alert("You have UNLOCKED your vehicle!");
+		var self = this;
+		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
 			return register.toggleLock(carEthAddresses[nearestCar], true, {from: accounts[2]})
@@ -279,6 +284,8 @@ window.App = {
 
 	endSession: function(){
 		alert("You have ended your ryde!");
+		var self = this;
+		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
 			return register.finishRide(carEthAddresses[nearestCar], {from: accounts[2]})

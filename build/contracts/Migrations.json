@@ -100,8 +100,8 @@
     "1490901844448": {
       "events": {},
       "links": {},
-      "address": "0x14b56aa28aacb5369c8751fd232d17799afebc36",
-      "updated_at": 1491053632243
+      "address": "0xb41539a2c9056307c302319b0b703ae4cff2d8a0",
+      "updated_at": 1491157817682
     },
     "1490905878016": {
       "events": {},
@@ -111,5 +111,5 @@
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1491053632243
+  "updated_at": 1491157817682
 }

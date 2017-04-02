@@ -59,25 +59,30 @@ contract CarRegistry {
 
     struct TripPosition {
         address client;
-        Position clientPos;
-        Position destPos;
+        string lat;
+        string long;
         bool isUnlocked;
         uint tripStatus; //1 -> Trip Pending, 2 -> Trip In Progress, 3 -> Trip Finished
     }
 
-    function confirmTrip(address carAddr, string custLat, string custLong, string destLat, string destLong) payable public {
+    function confirmTrip(address carAddr, string custLat, string custLong) payable public {
         if (msg.value == 0){
             throw;
         }
-
         escrow[carAddr] = msg.value;
-        trips[carAddr] = TripPosition(msg.sender, Position(custLat, custLong, true), Position(destLat, destLong, true), false, 1);
-
+        //trips[carAddr] = TripPosition(msg.sender, custLat, custLong, false, 1);
+        trips[carAddr].client = msg.sender;  
+        trips[carAddr].lat = custLat;
+        trips[carAddr].long = custLong;
+        trips[carAddr].tripStatus = 1; //Trip Pending
     }
 
-    function startRide(address carAddr) public {
+    function startRide(address carAddr, string destLat, string destLong) public {
         if (trips[carAddr].client == msg.sender){
             trips[carAddr].tripStatus = 2;  //Trip in Progress
+            trips[carAddr].lat = destLat;
+            trips[carAddr].long = destLong;
+
         }
     }
 
