@@ -308,6 +308,19 @@ window.App = {
 		}
 	},
 
+	checkTripStatus: function() {
+		var self = this;
+		var register;
+		CarRegistry.deployed().then(function(instance) {
+			register = instance;
+			return register.checkTripStatus.call({from: account});
+		}).then(function(response){
+			console.log(response);
+		}).catch(function(e) {
+			console.log(e);
+		});
+	},
+
 	handleLocationError: function(browserHasGeolocation, infoWindow, pos) {
 			infoWindow.setPosition(pos);
 			infoWindow.setContent(browserHasGeolocation ?
@@ -325,38 +338,38 @@ window.App = {
 		// 	};
 		// 	return new google.maps.Marker(markerOption);
 		// },
-		codeAddress: function(){
-			var self = this;
-			$("#quoteInfoBlock").removeAttr('hidden');
-			var geocoder = new google.maps.Geocoder();
-			var address = document.getElementById('address').value;
-			geocoder.geocode( { 'address': address}, function(results, status) {
-				if (status == 'OK') {
-					destination = results[0];
-					map.setCenter(results[0].geometry.location);
-					self.calcRoute();
-				} else {
-					alert('Geocode was not successful for the following reason: ' + status);
-				}
-			});
-		},
+	codeAddress: function(){
+		var self = this;
+		$("#quoteInfoBlock").removeAttr('hidden');
+		var geocoder = new google.maps.Geocoder();
+		var address = document.getElementById('address').value;
+		geocoder.geocode( { 'address': address}, function(results, status) {
+			if (status == 'OK') {
+				destination = results[0];
+				map.setCenter(results[0].geometry.location);
+				self.calcRoute();
+			} else {
+				alert('Geocode was not successful for the following reason: ' + status);
+			}
+		});
+	},
 
-		calcRoute: function(){
-			var self = this;
-			var start = pos;
-			var end = destination.geometry.location;
-			console.log("destination: " + destination);
-			var request = {
-				origin: start,
-				destination: end,
-				travelMode: 'DRIVING'
-			};
-			console.log("Start: " + start);
-			console.log("End: " + end);
+	calcRoute: function(){
+		var self = this;
+		var start = pos;
+		var end = destination.geometry.location;
+		console.log("destination: " + destination);
+		var request = {
+			origin: start,
+			destination: end,
+			travelMode: 'DRIVING'
+		};
+		console.log("Start: " + start);
+		console.log("End: " + end);
 
-			userLoc.setMap(null);
-			directionsDisplay.setMap(map);
-		//directionsDisplay.setPanel(do)
+		userLoc.setMap(null);
+		directionsDisplay.setMap(map);
+	//directionsDisplay.setPanel(do)
 
 		
 		directionsService.route(request, function(result, status) {
@@ -387,6 +400,8 @@ window.App = {
 				}).then(function(cost) {
 					globalCostInEth = cost;
 					self.setElement(cost + " ether", 'costEstimate')
+				}).catch(function (e){
+					console.log(e);
 				});
 				document.getElementById("confirmButton").style.visibility = 'visible';
 				//self.setElement("you cannot afford this", 'costEstimate');
