@@ -37,6 +37,15 @@ contract CarRegistry {
         bool isValid;
 	}
 
+    struct TripPosition {
+        address client;
+        string lat;
+        string long;
+        bool isUnlocked;
+        uint8 tripStatus; //1 -> Trip Pending, 2 -> Trip In Progress, 3 -> Trip Finished
+    }
+
+
     function returnPosition(address carAddress) public returns (string, string){
         //return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
         return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
@@ -57,13 +66,6 @@ contract CarRegistry {
         return (baseRate, dollarsPerMinute, dollarsPerMile);
     }
 
-    struct TripPosition {
-        address client;
-        string lat;
-        string long;
-        bool isUnlocked;
-        uint tripStatus; //1 -> Trip Pending, 2 -> Trip In Progress, 3 -> Trip Finished
-    }
 
     function confirmTrip(address carAddr, string custLat, string custLong) payable public {
         if (msg.value == 0){
@@ -114,6 +116,7 @@ contract CarRegistry {
         }else{
         	carDatabase[msg.sender].lat = initLat;
             carDatabase[msg.sender].long = initLong;
+            carDatabase[msg.sender].isValid = true;
             registeredCars[registeredCars.length++] = msg.sender;
         }
     }
@@ -125,6 +128,23 @@ contract CarRegistry {
             carDatabase[msg.sender].long = newLong;
     	}else{
             throw;
+        }
+    }
+
+    function checkTripStatus() public returns (uint8){
+        return trips[msg.sender].tripStatus;
+    }
+
+    function withdrawFunds() public returns (bool){
+        uint amount = escrow[msg.sender];
+        // Zero the pending refund before
+        // sending to prevent re-entrancy attacks
+        escrow[msg.sender] = 0;
+        if (msg.sender.send(amount)) {
+            return true;
+        } else {
+            escrow[msg.sender] = amount;
+            return false;
         }
     }
 
