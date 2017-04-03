@@ -93,12 +93,12 @@ window.App = {
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
 			//self.setStatus("Loading");
-			return register.getNumberOfCars.call({from: account});
+			return register.getNumberOfCars.call({from: accounts[2]});
 		}).then(function(num){
 			console.log(num);
 			var posArr = [];
 			for (var i = 0; i < num; i++) {
-				var posCar = register.getLocationByIndex.call(i, {from: account});
+				var posCar = register.getLocationByIndex.call(i, {from: accounts[2]});
 				console.log(posCar);
 				posArr.push(posCar);
 			}
@@ -189,7 +189,6 @@ window.App = {
 		});
 
 	},
-
 	confirmRide: function(){
 		var self = this;
 		var register;
@@ -198,18 +197,30 @@ window.App = {
 			register = instance;
 			var costInWei = 1000000000000000000*globalCostInEth;
 			//	return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei, gas: 10000000, gasPrice: web3.toWei(300, 'gwei')})
+			document.getElementById("carControlBlock").style.display = 'block';
+			document.getElementById("rydeStatus").innerHTML = "Your ryde is currently being confirmed...";
+			document.getElementById("rydeStatus").innerHTML = "Your ryde has been confirmed. Your vehicle is on it's way."
+
+			var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < 5000);
 			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), {from: accounts[2], value: costInWei, gas: 167045})
 		}).then(function(tx_id){
 			console.log("Confirm Ride transaction completed!");
-			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
+			document.getElementById("rydeStatus").innerHTML = "Your ryde has been confirmed. Your vehicle is on it's way."
+	var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < 5000);
+			document.getElementById("rydeStatus").innerHTML = 'Hit the "Begin Your Ryde" button to start the session.';
+			//return register.checkTripStatus.call(carEthAddresses[nearestCar], {from: accounts[0]});
 		}).then(function(response){
 			console.log(response);
 		}).catch(function(e) {
 			console.log(e);
 		});
 
-		document.getElementById("carControlBlock").style.display = 'block';
-		document.getElementById("rydeStatus").innerHTML = 'Hit the "Begin Your Ryde" button to start the session.';
 		document.getElementById("send").disabled = true;
 		document.getElementById("confirmButton").disabled = true;
 		$("#carControlBlock").removeAttr('hidden');
@@ -240,6 +251,10 @@ window.App = {
 		}).catch(function(e) {
 			console.log(e);
 		});
+		    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < 5000);
 		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
 		document.getElementById("unlockCarButton").disabled = false;
 		document.getElementById("endSessionButton").disabled = false;
@@ -258,6 +273,10 @@ window.App = {
 		}).catch(function(e) {
 			console.log(e);
 		});
+		    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < 5000);
 		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
 		document.getElementById("unlockCarButton").disabled = false;
 		document.getElementById("lockCarButton").disabled = true;
@@ -276,6 +295,10 @@ window.App = {
 		}).catch(function(e) {
 			console.log(e);
 		});
+		    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < 5000);
 		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is UNLOCKED';
 		document.getElementById("unlockCarButton").disabled = true;
 		document.getElementById("lockCarButton").disabled = false;
@@ -283,7 +306,11 @@ window.App = {
 	},
 
 	endSession: function(){
-		alert("You have ended your ryde!");
+		    var date = new Date();
+    var curDate = null;
+    do { curDate = new Date(); }
+    while(curDate-date < 5000);
+		alert("You have ended your ryde! You trip payment is currently being processed.");
 		var self = this;
 		var register;
 		CarRegistry.deployed().then(function(instance) {
