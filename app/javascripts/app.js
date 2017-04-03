@@ -5,6 +5,8 @@ import "../stylesheets/app.css";
 import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
+//ssh pi@172.31.170.172
+
 // Import our contract artifacts and turn them into usable abstractions.
 import carregistry_artifacts from '../../build/contracts/CarRegistry.json'
 
@@ -423,10 +425,12 @@ window.App = {
 					register = instance;
 					return register.returnRates.call({from: account});
 				}).then(function(rateInfo) {
-					return (parseFloat(rateInfo[0]) + (parseFloat(rateInfo[1])*totalDuration) + (parseFloat(rateInfo[2]*totalDistance)))/50.10;
+					return (parseFloat(rateInfo[0]) + (parseFloat(rateInfo[1])*totalDuration) + (parseFloat(rateInfo[2]*totalDistance)))/50;
 				}).then(function(cost) {
 					globalCostInEth = cost;
-					self.setElement(cost + " ether", 'costEstimate')
+					var costInDollars = cost*50;
+					self.setElement(cost + " ether", 'costEstimate');
+					self.setElement("$" + costInDollars, 'costEstimateDollars');
 				}).catch(function (e){
 					console.log(e);
 				});
