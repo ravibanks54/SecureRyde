@@ -1,8 +1,11 @@
 body {
-  margin-left: 25%;
-  margin-right: 25%;
-  margin-top: 10%;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 3%;
+  margin-bottom: 15%;
   font-family: "Open Sans", sans-serif;
+  background: url("http://hdwallpaperbackgrounds.net/wp-content/uploads/2015/10/Long-Road-Sunset-HD-Wallpapers.jpg");
+  background-repeat: no-repeat;
 }
 
 label {
@@ -43,6 +46,15 @@ h3 {
   color: black;
 }
 
+.white {
+  color: white;
+}
+
+.whiteBold{
+  color: white;
+  font-weight: bold;
+}
+
 #balance {
   color: black;
 }
@@ -52,9 +64,8 @@ h3 {
 }
 
 #map {
-   width: 100%;
-   height: 0;
-   padding-bottom: 100%;
+  width: 100%;
+  padding-bottom: 110%;
 }
 
 .quoteDescriptor {
@@ -65,3 +76,27 @@ h3 {
   float:right;
   margin-left: 15px;
 }
+
+.quoteInfoBlock{
+  float: left;
+}
+
+.carControlBlock{
+  float: left;
+  margin-top: 30px;
+}
+
+.requestItems{
+  float: top;
+}
+
+.rydeItems{
+  float: bottom;
+}
+
+table { 
+  border-spacing: 40px 10px; 
+}
+
+
+

@@ -150,26 +150,31 @@ window.App = {
 		  		}else{
 		  			carLocations[k].setMap(null);
 		  		}
-	  		}
-	  }
-	  nearestCar = carNumber;
+		  	}
+		  }
+		  nearestCar = carNumber;
 
-	},
+		},
 
-	calcTime: function(pos1, carNumber, distances){
-		var self = this;
-		var pos2 = pos;
+		calcTime: function(pos1, carNumber, distances){
+			var self = this;
+			var pos2 = pos;
 
-		console.log("Pos1: " + pos1);
-		console.log("Pos2: " + pos2);
-		var request = {
-			origin: pos1,
-			destination: pos2,
-			travelMode: 'DRIVING'
-		};
+			if(typeof pos2 == 'undefined'){
+				//set default location
+				console.log("POS2 BEING SET");
+				pos2 = {lat: 40.521803, lng: -74.460833};
+			}
+			console.log("Pos1: " + pos1);
+			console.log("Pos2: " + pos2);
+			var request = {
+				origin: pos1,
+				destination: pos2,
+				travelMode: 'DRIVING'
+			};
 
-		carDirectionsService.route(request, function(result, status) {
-			if (status == 'OK') {
+			carDirectionsService.route(request, function(result, status) {
+				if (status == 'OK') {
 				//		console.log("Your directions are being rendered");
 				var totalDuration = 0;
 				carDirectionsDisplay.setDirections(result);
@@ -186,35 +191,35 @@ window.App = {
 				console.log("calculated duration for "+ pos1 +": " + totalDuration);
 				distances[carNumber] = totalDuration;
 			}else{
-					console.log("Problem with calculating time of cars");
+				console.log("Problem with calculating time of cars");
 			}
 		});
 
-	},
-	confirmRide: function(){
-		var self = this;
-		var register;
-		console.log("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
-		CarRegistry.deployed().then(function(instance) {
-			register = instance;
-			var costInWei = 1000000000000000000*globalCostInEth;
+		},
+		confirmRide: function(){
+			var self = this;
+			var register;
+			console.log("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
+			CarRegistry.deployed().then(function(instance) {
+				register = instance;
+				var costInWei = 1000000000000000000*globalCostInEth;
 			//	return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei, gas: 10000000, gasPrice: web3.toWei(300, 'gwei')})
 			document.getElementById("carControlBlock").style.display = 'block';
 			document.getElementById("rydeStatus").innerHTML = "Your ryde is currently being confirmed...";
 			document.getElementById("rydeStatus").innerHTML = "Your ryde has been confirmed. Your vehicle is on it's way."
 
 			var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < 5000);
+			var curDate = null;
+			do { curDate = new Date(); }
+			while(curDate-date < 5000);
 			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), {from: accounts[2], value: costInWei, gas: 167045})
 		}).then(function(tx_id){
 			console.log("Confirm Ride transaction completed!");
 			document.getElementById("rydeStatus").innerHTML = "Your ryde has been confirmed. Your vehicle is on it's way."
-	var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < 5000);
+			var date = new Date();
+			var curDate = null;
+			do { curDate = new Date(); }
+			while(curDate-date < 5000);
 			document.getElementById("rydeStatus").innerHTML = 'Hit the "Begin Your Ryde" button to start the session.';
 			//return register.checkTripStatus.call(carEthAddresses[nearestCar], {from: accounts[0]});
 		}).then(function(response){
@@ -253,11 +258,11 @@ window.App = {
 		}).catch(function(e) {
 			console.log(e);
 		});
-		    var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < 5000);
-		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
+		var date = new Date();
+		var curDate = null;
+		do { curDate = new Date(); }
+		while(curDate-date < 5000);
+		document.getElementById("rydeStatus").innerHTML = 'Your vehicle is LOCKED';
 		document.getElementById("unlockCarButton").disabled = false;
 		document.getElementById("endSessionButton").disabled = false;
 		document.getElementById("startSessionButton").disabled = true;;	
@@ -275,11 +280,11 @@ window.App = {
 		}).catch(function(e) {
 			console.log(e);
 		});
-		    var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < 5000);
-		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is LOCKED';
+		var date = new Date();
+		var curDate = null;
+		do { curDate = new Date(); }
+		while(curDate-date < 5000);
+		document.getElementById("rydeStatus").innerHTML = 'Your vehicle is LOCKED';
 		document.getElementById("unlockCarButton").disabled = false;
 		document.getElementById("lockCarButton").disabled = true;
 
@@ -297,10 +302,10 @@ window.App = {
 		}).catch(function(e) {
 			console.log(e);
 		});
-		    var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < 5000);
+		var date = new Date();
+		var curDate = null;
+		do { curDate = new Date(); }
+		while(curDate-date < 5000);
 		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is UNLOCKED';
 		document.getElementById("unlockCarButton").disabled = true;
 		document.getElementById("lockCarButton").disabled = false;
@@ -308,10 +313,10 @@ window.App = {
 	},
 
 	endSession: function(){
-		    var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < 5000);
+		var date = new Date();
+		var curDate = null;
+		do { curDate = new Date(); }
+		while(curDate-date < 5000);
 		alert("You have ended your ryde! You trip payment is currently being processed.");
 		var self = this;
 		var register;
@@ -331,6 +336,11 @@ window.App = {
 		document.getElementById("quoteInfoBlock").style.display = 'none';
 		document.getElementById("send").disabled = false;
 		document.getElementById("confirmButton").disabled = false;
+
+			 	 
+	 	//var balance = web3.fromWei(web3.eth.getBalance(accounts[2]), "ether")
+	 	//self.setElement(balance, 'balance');
+
 		carLocations[nearestCar].setPosition(originialPosition);
 		for(var i = 0; i < carLocations.length; i++){
 			carLocations[i].setMap(map);
@@ -351,10 +361,10 @@ window.App = {
 	},
 
 	handleLocationError: function(browserHasGeolocation, infoWindow, pos) {
-			infoWindow.setPosition(pos);
-			infoWindow.setContent(browserHasGeolocation ?
-				'Error: The Geolocation service failed.' :
-				'Error: Your browser doesn\'t support geolocation.');
+		infoWindow.setPosition(pos);
+		infoWindow.setContent(browserHasGeolocation ?
+			'Error: The Geolocation service failed.' :
+			'Error: Your browser doesn\'t support geolocation.');
 	},
 
 		// appendMarker: function(map, latitude, longitude, text) {
@@ -367,74 +377,74 @@ window.App = {
 		// 	};
 		// 	return new google.maps.Marker(markerOption);
 		// },
-	codeAddress: function(){
-		var self = this;
-		$("#quoteInfoBlock").removeAttr('hidden');
-		var geocoder = new google.maps.Geocoder();
-		var address = document.getElementById('address').value;
-		geocoder.geocode( { 'address': address}, function(results, status) {
-			if (status == 'OK') {
-				destination = results[0];
-				map.setCenter(results[0].geometry.location);
-				self.calcRoute();
-			} else {
-				alert('Geocode was not successful for the following reason: ' + status);
-			}
-		});
-	},
+		codeAddress: function(){
+			var self = this;
+			$("#quoteInfoBlock").removeAttr('hidden');
+			var geocoder = new google.maps.Geocoder();
+			var address = document.getElementById('address').value;
+			geocoder.geocode( { 'address': address}, function(results, status) {
+				if (status == 'OK') {
+					destination = results[0];
+					map.setCenter(results[0].geometry.location);
+					self.calcRoute();
+				} else {
+					alert('Geocode was not successful for the following reason: ' + status);
+				}
+			});
+		},
 
-	calcRoute: function(){
-		var self = this;
-		var start = pos;
-		var end = destination.geometry.location;
-		console.log("destination: " + destination);
-		var request = {
-			origin: start,
-			destination: end,
-			travelMode: 'DRIVING'
-		};
-		console.log("Start: " + start);
-		console.log("End: " + end);
+		calcRoute: function(){
+			var self = this;
+			var start = pos;
+			var end = destination.geometry.location;
+			console.log("destination: " + destination);
+			var request = {
+				origin: start,
+				destination: end,
+				travelMode: 'DRIVING'
+			};
+			console.log("Start: " + start);
+			console.log("End: " + end);
 
-		userLoc.setMap(null);
-		directionsDisplay.setMap(map);
+			userLoc.setMap(null);
+			directionsDisplay.setMap(map);
 	//directionsDisplay.setPanel(do)
 
-		
-		directionsService.route(request, function(result, status) {
-			if (status == 'OK') {
-				console.log("Your directions are being rendered");
-				directionsDisplay.setDirections(result);
 
-				var legs = result.routes[0].legs;
-				var totalDistance = 0;
-				var totalDuration = 0;
-				for(var i=0; i<legs.length; ++i) {
-					totalDistance += legs[i].distance.value;
-					totalDuration += legs[i].duration.value;
-				}
-				totalDistance = Math.ceil(totalDistance * 0.0621371)/100;
-				totalDuration = Math.ceil(totalDuration / 60);
-				console.log("Distance to Destination: " + totalDistance + " miles");
-				console.log("Estimated Time: " + totalDuration + " minutes");
-				self.setElement(destination.formatted_address, 'destinationRequested');
-				self.setElement(totalDistance + " miles", 'distanceEstimate');
-				self.setElement(totalDuration + " minutes", 'timeEstimate');
-				var register;
-				CarRegistry.deployed().then(function(instance) {
-					register = instance;
-					return register.returnRates.call({from: account});
-				}).then(function(rateInfo) {
-					return (parseFloat(rateInfo[0]) + (parseFloat(rateInfo[1])*totalDuration) + (parseFloat(rateInfo[2]*totalDistance)))/50;
-				}).then(function(cost) {
-					globalCostInEth = cost;
-					var costInDollars = cost*50;
-					self.setElement(cost + " ether", 'costEstimate');
-					self.setElement("$" + costInDollars, 'costEstimateDollars');
-				}).catch(function (e){
-					console.log(e);
-				});
-				document.getElementById("confirmButton").style.visibility = 'visible';
+	directionsService.route(request, function(result, status) {
+		if (status == 'OK') {
+			console.log("Your directions are being rendered");
+			directionsDisplay.setDirections(result);
+
+			var legs = result.routes[0].legs;
+			var totalDistance = 0;
+			var totalDuration = 0;
+			for(var i=0; i<legs.length; ++i) {
+				totalDistance += legs[i].distance.value;
+				totalDuration += legs[i].duration.value;
+			}
+			totalDistance = Math.ceil(totalDistance * 0.0621371)/100;
+			totalDuration = Math.ceil(totalDuration / 60);
+			console.log("Distance to Destination: " + totalDistance + " miles");
+			console.log("Estimated Time: " + totalDuration + " minutes");
+			self.setElement(destination.formatted_address, 'destinationRequested');
+			self.setElement(totalDistance + " miles", 'distanceEstimate');
+			self.setElement(totalDuration + " minutes", 'timeEstimate');
+			var register;
+			CarRegistry.deployed().then(function(instance) {
+				register = instance;
+				return register.returnRates.call({from: account});
+			}).then(function(rateInfo) {
+				return (parseFloat(rateInfo[0]) + (parseFloat(rateInfo[1])*totalDuration) + (parseFloat(rateInfo[2]*totalDistance)))/50;
+			}).then(function(cost) {
+				globalCostInEth = cost;
+				var costInDollars = cost*50;
+				self.setElement(cost + " ether", 'costEstimate');
+				self.setElement("$" + costInDollars, 'costEstimateDollars');
+			}).catch(function (e){
+				console.log(e);
+			});
+			document.getElementById("confirmButton").style.visibility = 'visible';
 				//self.setElement("you cannot afford this", 'costEstimate');
 				document.getElementById("quoteInfoBlock").style.display = 'block';
 				self.findNearestCar();
@@ -443,7 +453,7 @@ window.App = {
 				console.log("Problem with destination entered. Please try again.");
 			}
 		});
-	}
+}
 };
 
 window.addEventListener('load', function() {
@@ -484,7 +494,7 @@ window.initMap = function() {
 		  			lat: position.coords.latitude,
 		  			lng: position.coords.longitude
 		  		};
-
+		  		console.log("The user is at: " + pos.lat + " and " + pos.lng);
 		  		userLoc = new google.maps.Marker({
 		  			position: pos,
 		  			map: map
@@ -518,7 +528,7 @@ window.initMap = function() {
 			var markerOption = {
 				position: pos,
 				map: map,
-				icon: 'https://cdn1.iconfinder.com/data/icons/automotix/128/bug_car_small_vintage_limousine-128.png',
+				icon: 'http://www.wcbuzz.com/file/2015/09/car-service-car-with-tool-icon-on-yellow-map-pointer-vector-illustration_187389968.jpg.png',
 				title: text || 'Hello World!'
 			};
 			return new google.maps.Marker(markerOption);
