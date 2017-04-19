@@ -135,6 +135,10 @@ contract CarRegistry {
         return trips[msg.sender].tripStatus;
     }
 
+    function checkLockStatus() public returns (bool){
+        return trips[msg.sender].isUnlocked;
+    }
+
     function withdrawFunds() public returns (bool){
         uint amount = escrow[msg.sender];
         // Zero the pending refund before
@@ -148,61 +152,5 @@ contract CarRegistry {
         }
     }
 
-
-    /*
-    function requestTripQuote(string clientLat, string clientLong, string destinationLat, string destinationLong) public {    //Returns payment cost and arrival estimate
-        if (msg.value > 0) throw;
-        address carAddr;
-        for(uint i = 0; i <= numCars; i++){
-            carAddr = carDatabase[registeredCars[0]]; //Figure out closest car address
-            //calculate cost based on distance
-            break;
-        }
-        uint cost = 100000;
-        TripQuoted(cost, 200000);
-        costs[msg.sender] = cost;
-        Position clientPos = new Position(clientLat, clientLong);
-        Position destPos = new Position(destinationLat, destinationLong);
-        TripPosition positions = new TripPosition(clientPos, destPos, false);
-        trips[carAddr] = positions;
-
-
-        //Create event here with trip quote and time to arrival
-        //Perhaps timestamp quote to only be valid for a short time
-        //Edge case: no longer valid quote
-        //Set cost in costs mapping
-            
-    }
-
-    function confirmTrip() payable public returns () {
-        if (msg.value == costs[msg.sender]){
-            escrow[carAddr] = msg.value;
-            trips[carAddr].confirmed = true;    //Once Trip is finished, clear this
-        }else{
-            throw;
-        }
-    }
-
-    function hasCustomer() public returns (bool){
-        return trips[msg.sender].confirmed == true;
-    }
-
-    function reachedDestination() public{
-        trips[msg.sender] = 0;
-        
-    }
-
-    function withdraw() public {
-        if (escrow[msg.sender] != 0){
-            if (!msg.sender.send(escrow[msg.sender])){
-                return false;
-            }else{
-                return true;
-            }
-        }else{
-            throw;
-        }
-    }
-*/
 }
 

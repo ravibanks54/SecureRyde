@@ -95,12 +95,12 @@ window.App = {
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
 			//self.setStatus("Loading");
-			return register.getNumberOfCars.call({from: accounts[2]});
+			return register.getNumberOfCars.call({from: account});
 		}).then(function(num){
 			console.log(num);
 			var posArr = [];
 			for (var i = 0; i < num; i++) {
-				var posCar = register.getLocationByIndex.call(i, {from: accounts[2]});
+				var posCar = register.getLocationByIndex.call(i, {from: account});
 				console.log(posCar);
 				posArr.push(posCar);
 			}
@@ -203,7 +203,7 @@ window.App = {
 			CarRegistry.deployed().then(function(instance) {
 				register = instance;
 				var costInWei = 1000000000000000000*globalCostInEth;
-			//	return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: accounts[2], value: costInWei, gas: 10000000, gasPrice: web3.toWei(300, 'gwei')})
+			//	return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: account, value: costInWei, gas: 10000000, gasPrice: web3.toWei(300, 'gwei')})
 			document.getElementById("carControlBlock").style.display = 'block';
 			document.getElementById("rydeStatus").innerHTML = "Your ryde is currently being confirmed...";
 			document.getElementById("rydeStatus").innerHTML = "Your ryde has been confirmed. Your vehicle is on it's way."
@@ -212,7 +212,7 @@ window.App = {
 			var curDate = null;
 			do { curDate = new Date(); }
 			while(curDate-date < 5000);
-			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), {from: accounts[2], value: costInWei, gas: 167045})
+			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), {from: account, value: costInWei, gas: 167045})
 		}).then(function(tx_id){
 			console.log("Confirm Ride transaction completed!");
 			document.getElementById("rydeStatus").innerHTML = "Your ryde has been confirmed. Your vehicle is on it's way."
@@ -249,10 +249,10 @@ window.App = {
 			register = instance;
 			var destLatString = destination.geometry.location.lat.toString();
 			var destLongString = destination.geometry.location.lng.toString();
-			return register.startRide(carEthAddresses[nearestCar], destLatString, destLongString, {from: accounts[2]})
+			return register.startRide(carEthAddresses[nearestCar], destLatString, destLongString, {from: account})
 		}).then(function(tx_id){
 			console.log("Start Ride transaction completed!");
-			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: accounts[2]});
+			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: account});
 		}).then(function(response){
 			console.log(response);
 		}).catch(function(e) {
@@ -274,7 +274,7 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			return register.toggleLock(carEthAddresses[nearestCar], false, {from: accounts[2]})
+			return register.toggleLock(carEthAddresses[nearestCar], false, {from: account})
 		}).then(function(tx_id){
 			console.log("Lock transaction completed!");
 		}).catch(function(e) {
@@ -296,7 +296,7 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			return register.toggleLock(carEthAddresses[nearestCar], true, {from: accounts[2]})
+			return register.toggleLock(carEthAddresses[nearestCar], true, {from: account})
 		}).then(function(tx_id){
 			console.log("Unlock transaction compleeted");
 		}).catch(function(e) {
@@ -322,7 +322,7 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			return register.finishRide(carEthAddresses[nearestCar], {from: accounts[2]})
+			return register.finishRide(carEthAddresses[nearestCar], {from: account})
 		}).then(function(tx_id){
 			console.log("Finish ride transaction completed.");
 		}).catch(function(e) {
@@ -338,8 +338,8 @@ window.App = {
 		document.getElementById("confirmButton").disabled = false;
 
 			 	 
-	 	//var balance = web3.fromWei(web3.eth.getBalance(accounts[2]), "ether")
-	 	//self.setElement(balance, 'balance');
+	 	var balance = web3.fromWei(web3.eth.getBalance(account), "ether")
+	 	self.setElement(balance, 'balance');
 
 		carLocations[nearestCar].setPosition(originialPosition);
 		for(var i = 0; i < carLocations.length; i++){
@@ -353,6 +353,19 @@ window.App = {
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
 			return register.checkTripStatus.call({from: account});
+		}).then(function(response){
+			console.log(response);
+		}).catch(function(e) {
+			console.log(e);
+		});
+	},
+
+	checkLockStatus: function() {
+		var self = this;
+		var register;
+		CarRegistry.deployed().then(function(instance) {
+			register = instance;
+			return register.checkLockStatus.call({from: account});
 		}).then(function(response){
 			console.log(response);
 		}).catch(function(e) {
