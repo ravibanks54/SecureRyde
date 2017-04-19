@@ -3,7 +3,6 @@ pragma solidity ^0.4.8;
 contract CarRegistry {
 
     mapping(address => Position) carDatabase;   //Maps car addresses to their GPS coordinates
-    //mapping(address => uint) costs;     //Maps user addresses to amount they owe
     mapping(address => uint) escrow;    //Maps car addresses to amount they are owed
     mapping(address => TripPosition) trips; //Maps car addresses to client's current location and destination
     address[] registeredCars;
@@ -11,13 +10,15 @@ contract CarRegistry {
     string baseRate;
     string dollarsPerMile;
     string dollarsPerMinute;
+
+    address initAddress;
     /*
     "0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20", "40.4317", "-74.4050", "40.594", "-74.6049"
     */
     event TripQuoted(uint tripCost, uint timeToArrival);
     /* Constructor */
     function CarRegistry(){
-        registeredCars[registeredCars.length++] = 0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20;
+        /*registeredCars[registeredCars.length++] = 0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20;
         registeredCars[registeredCars.length++] = 0xb063c23249bd719b4e5217b507570724ccbdbff1;
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].lat = "40.4317";
         carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].long = "-74.4050";
@@ -25,6 +26,14 @@ contract CarRegistry {
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].lat = "40.594";
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].long = "-74.6049";
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].isValid = true;
+        */
+
+        initAddr = 0xb063c23249bd719b4e5217b507570724ccbdbff1;
+        registeredCars[registeredCars.length++] = initAddr;
+        carDatabase[initAddr].lat = "40.4317";
+        carDatabase[initAddr].long = "-74.4050";
+        carDatabase[initAddr].isValid = true;
+
         baseRate = "1.05";
         dollarsPerMile = "1.15";
         dollarsPerMinute = "0.153";
