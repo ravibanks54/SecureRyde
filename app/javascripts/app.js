@@ -97,11 +97,11 @@ window.App = {
 			//self.setStatus("Loading");
 			return register.getNumberOfCars.call({from: account});
 		}).then(function(num){
-			console.log(num);
+			//console.log(num);
 			var posArr = [];
 			for (var i = 0; i < num; i++) {
 				var posCar = register.getLocationByIndex.call(i, {from: account});
-				console.log(posCar);
+				//console.log(posCar);
 				posArr.push(posCar);
 			}
 			return Promise.all(posArr);
@@ -165,8 +165,8 @@ window.App = {
 				console.log("POS2 BEING SET");
 				pos2 = {lat: 40.521803, lng: -74.460833};
 			}
-			console.log("Pos1: " + pos1);
-			console.log("Pos2: " + pos2);
+			//console.log("Pos1: " + pos1);
+			//console.log("Pos2: " + pos2);
 			var request = {
 				origin: pos1,
 				destination: pos2,
@@ -184,11 +184,11 @@ window.App = {
 				for(var i=0; i<legs.length; ++i) {
 					totalDuration += legs[i].duration.value;
 				}
-				console.log("totalDuration: " + totalDuration/60);
+				//console.log("totalDuration: " + totalDuration/60);
 				totalDuration = Math.ceil(totalDuration / 60);
 				//self.setElement("you cannot afford this", 'costEstimate');
-				console.log("We are now in CALCTIME!!!");
-				console.log("calculated duration for "+ pos1 +": " + totalDuration);
+				//console.log("We are now in CALCTIME!!!");
+				//console.log("calculated duration for "+ pos1 +": " + totalDuration);
 				distances[carNumber] = totalDuration;
 			}else{
 				console.log("Problem with calculating time of cars");
@@ -199,7 +199,7 @@ window.App = {
 		confirmRide: function(){
 			var self = this;
 			var register;
-			console.log("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
+			//console.log("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
 			CarRegistry.deployed().then(function(instance) {
 				register = instance;
 				var costInWei = 1000000000000000000*globalCostInEth;
@@ -214,7 +214,7 @@ window.App = {
 			while(curDate-date < 5000);
 			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), {from: account, value: costInWei, gas: 167045})
 		}).then(function(tx_id){
-			console.log("Confirm Ride transaction completed!");
+			//console.log("Confirm Ride transaction completed!");
 			document.getElementById("rydeStatus").innerHTML = "Your ryde has been confirmed. Your vehicle is on it's way."
 			var date = new Date();
 			var curDate = null;
@@ -223,7 +223,7 @@ window.App = {
 			document.getElementById("rydeStatus").innerHTML = 'Hit the "Begin Your Ryde" button to start the session.';
 			//return register.checkTripStatus.call(carEthAddresses[nearestCar], {from: accounts[0]});
 		}).then(function(response){
-			console.log(response);
+			//console.log(response);
 		}).catch(function(e) {
 			console.log(e);
 		});
@@ -251,10 +251,10 @@ window.App = {
 			var destLongString = destination.geometry.location.lng.toString();
 			return register.startRide(carEthAddresses[nearestCar], destLatString, destLongString, {from: account})
 		}).then(function(tx_id){
-			console.log("Start Ride transaction completed!");
+			//console.log("Start Ride transaction completed!");
 			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: account});
 		}).then(function(response){
-			console.log(response);
+			//console.log(response);
 		}).catch(function(e) {
 			console.log(e);
 		});
@@ -276,7 +276,7 @@ window.App = {
 			register = instance;
 			return register.toggleLock(carEthAddresses[nearestCar], false, {from: account})
 		}).then(function(tx_id){
-			console.log("Lock transaction completed!");
+			//console.log("Lock transaction completed!");
 		}).catch(function(e) {
 			console.log(e);
 		});
@@ -298,7 +298,7 @@ window.App = {
 			register = instance;
 			return register.toggleLock(carEthAddresses[nearestCar], true, {from: account})
 		}).then(function(tx_id){
-			console.log("Unlock transaction compleeted");
+			//console.log("Unlock transaction compleeted");
 		}).catch(function(e) {
 			console.log(e);
 		});
@@ -324,7 +324,7 @@ window.App = {
 			register = instance;
 			return register.finishRide(carEthAddresses[nearestCar], {from: account})
 		}).then(function(tx_id){
-			console.log("Finish ride transaction completed.");
+			//console.log("Finish ride transaction completed.");
 		}).catch(function(e) {
 			console.log(e);
 		});
@@ -352,7 +352,7 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			return register.checkTripStatus.call({from: account});
+			return register.checkTripStatus.call({from: accounts[1]});
 		}).then(function(response){
 			console.log(response);
 		}).catch(function(e) {
@@ -365,9 +365,23 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			return register.checkLockStatus.call({from: account});
+			return register.checkLockStatus.call({from: accounts[1]});
 		}).then(function(response){
 			console.log(response);
+		}).catch(function(e) {
+			console.log(e);
+		});
+	},
+
+	withdrawFunds: function() {
+		var self = this;
+		var register;
+		CarRegistry.deployed().then(function(instance) {
+			register = instance;
+			return register.withdrawFunds({from: accounts[1], value: costInWei, gas: 167045});
+		}).then(function(response){
+			console.log(response);
+			console.log(web3.fromWei(web3.eth.getBalance(accounts[1]), "ether"));
 		}).catch(function(e) {
 			console.log(e);
 		});
@@ -410,14 +424,14 @@ window.App = {
 			var self = this;
 			var start = pos;
 			var end = destination.geometry.location;
-			console.log("destination: " + destination);
+			//console.log("destination: " + destination);
 			var request = {
 				origin: start,
 				destination: end,
 				travelMode: 'DRIVING'
 			};
-			console.log("Start: " + start);
-			console.log("End: " + end);
+			//console.log("Start: " + start);
+			//console.log("End: " + end);
 
 			userLoc.setMap(null);
 			directionsDisplay.setMap(map);
@@ -426,7 +440,7 @@ window.App = {
 
 	directionsService.route(request, function(result, status) {
 		if (status == 'OK') {
-			console.log("Your directions are being rendered");
+			//console.log("Your directions are being rendered");
 			directionsDisplay.setDirections(result);
 
 			var legs = result.routes[0].legs;
@@ -438,8 +452,8 @@ window.App = {
 			}
 			totalDistance = Math.ceil(totalDistance * 0.0621371)/100;
 			totalDuration = Math.ceil(totalDuration / 60);
-			console.log("Distance to Destination: " + totalDistance + " miles");
-			console.log("Estimated Time: " + totalDuration + " minutes");
+			//console.log("Distance to Destination: " + totalDistance + " miles");
+			//console.log("Estimated Time: " + totalDuration + " minutes");
 			self.setElement(destination.formatted_address, 'destinationRequested');
 			self.setElement(totalDistance + " miles", 'distanceEstimate');
 			self.setElement(totalDuration + " minutes", 'timeEstimate');
@@ -507,7 +521,7 @@ window.initMap = function() {
 		  			lat: position.coords.latitude,
 		  			lng: position.coords.longitude
 		  		};
-		  		console.log("The user is at: " + pos.lat + " and " + pos.lng);
+		  		//console.log("The user is at: " + pos.lat + " and " + pos.lng);
 		  		userLoc = new google.maps.Marker({
 		  			position: pos,
 		  			map: map
