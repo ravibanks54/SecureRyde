@@ -11,7 +11,7 @@ contract CarRegistry {
     string dollarsPerMile;
     string dollarsPerMinute;
 
-    address initAddress;
+    address initAddr;
     /*
     "0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20", "40.4317", "-74.4050", "40.594", "-74.6049"
     */
@@ -28,7 +28,7 @@ contract CarRegistry {
         carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].isValid = true;
         */
 
-        initAddr = 0xb063c23249bd719b4e5217b507570724ccbdbff1;
+        initAddr = 0xf0d271e17d629565130d367fae122e5c55107baf;
         registeredCars[registeredCars.length++] = initAddr;
         carDatabase[initAddr].lat = "40.4317";
         carDatabase[initAddr].long = "-74.4050";
