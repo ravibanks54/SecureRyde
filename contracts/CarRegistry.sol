@@ -148,6 +148,10 @@ contract CarRegistry {
         return trips[msg.sender].isUnlocked;
     }
 
+    function returnDestination() public returns (string, string){
+        return (trips[msg.sender].lat, trips[msg.sender].long);
+    }
+
     function withdrawFunds() public returns (bool){
         uint amount = escrow[msg.sender];
         // Zero the pending refund before
