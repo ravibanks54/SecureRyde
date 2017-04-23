@@ -33,7 +33,7 @@ var distances = [];
 var carDirectionsDisplay;
 var carDirectionsService;
 var globalCostInEth;
-var originialPosition;
+var originalPosition;
 
 window.App = {
 	start: function() {
@@ -50,6 +50,7 @@ window.App = {
 	 // Get the initial account balance so it can be displayed.
 	 web3.eth.getAccounts(function(err, accs) {
 	 	if (err != null) {
+	 		alert(err);
 	 		alert("There was an error fetching your accounts.");
 	 		return;
 	 	}
@@ -61,7 +62,7 @@ window.App = {
 
 	 	accounts = accs;
 	 	account = accounts[0]; 
-	 	var balance = web3.fromWei(web3.eth.getBalance(accs[2]), "ether")
+	 	var balance = web3.fromWei(web3.eth.getBalance(accs[0]), "ether")
 	 	self.setElement(balance, 'balance');
 
 
@@ -173,9 +174,12 @@ window.App = {
 				travelMode: 'DRIVING'
 			};
 
+			//console.log("TESTING CALCTIME, Value of pos" + pos1 + "Value of car number" + carNumber + "Value of pos2" + pos2);
+
+
 			carDirectionsService.route(request, function(result, status) {
 				if (status == 'OK') {
-				//		console.log("Your directions are being rendered");
+				//	console.log("Your directions are being rendered for: " + pos1);
 				var totalDuration = 0;
 				carDirectionsDisplay.setDirections(result);
 
@@ -235,7 +239,7 @@ window.App = {
 		document.getElementById("lockCarButton").disabled = true;
 		document.getElementById("unlockCarButton").disabled = true;
 		document.getElementById("endSessionButton").disabled = true;
-		originialPosition = carLocations[nearestCar].position;
+		originalPosition = carLocations[nearestCar].position;
 		carLocations[nearestCar].setPosition(pos);
 
 		
@@ -252,7 +256,7 @@ window.App = {
 			return register.startRide(carEthAddresses[nearestCar], destLatString, destLongString, {from: account})
 		}).then(function(tx_id){
 			//console.log("Start Ride transaction completed!");
-			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: account});
+			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: account, gas: 167045});
 		}).then(function(response){
 			//console.log(response);
 		}).catch(function(e) {
@@ -274,7 +278,7 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			return register.toggleLock(carEthAddresses[nearestCar], false, {from: account})
+			return register.toggleLock(carEthAddresses[nearestCar], false, {from: account, gas: 167045})
 		}).then(function(tx_id){
 			//console.log("Lock transaction completed!");
 		}).catch(function(e) {
@@ -296,7 +300,7 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			return register.toggleLock(carEthAddresses[nearestCar], true, {from: account})
+			return register.toggleLock(carEthAddresses[nearestCar], true, {from: account, gas: 167045})
 		}).then(function(tx_id){
 			//console.log("Unlock transaction compleeted");
 		}).catch(function(e) {
@@ -322,7 +326,7 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			return register.finishRide(carEthAddresses[nearestCar], {from: account})
+			return register.finishRide(carEthAddresses[nearestCar], {from: account, gas: 167045})
 		}).then(function(tx_id){
 			//console.log("Finish ride transaction completed.");
 		}).catch(function(e) {
@@ -341,7 +345,7 @@ window.App = {
 	 	var balance = web3.fromWei(web3.eth.getBalance(account), "ether")
 	 	self.setElement(balance, 'balance');
 
-		carLocations[nearestCar].setPosition(originialPosition);
+		carLocations[nearestCar].setPosition(originalPosition);
 		for(var i = 0; i < carLocations.length; i++){
 			carLocations[i].setMap(map);
 		}
