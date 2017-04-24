@@ -18,15 +18,7 @@ contract CarRegistry {
     event TripQuoted(uint tripCost, uint timeToArrival);
     /* Constructor */
     function CarRegistry(){
-        /*registeredCars[registeredCars.length++] = 0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20;
-        registeredCars[registeredCars.length++] = 0xb063c23249bd719b4e5217b507570724ccbdbff1;
-        carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].lat = "40.4317";
-        carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].long = "-74.4050";
-        carDatabase[0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20].isValid = true;
-        carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].lat = "40.594";
-        carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].long = "-74.6049";
-        carDatabase[0xb063c23249bd719b4e5217b507570724ccbdbff1].isValid = true;
-        */
+
 
         initAddr = 0xf0d271e17d629565130d367fae122e5c55107baf;
         registeredCars[registeredCars.length++] = initAddr;
@@ -51,12 +43,11 @@ contract CarRegistry {
         string lat;
         string long;
         bool isUnlocked;
-        uint8 tripStatus; //1 -> Trip Pending, 2 -> Trip In Progress, 3 -> Trip Finished
+        uint tripStatus; //1 -> Trip Pending, 2 -> Trip In Progress, 3 -> Trip Finished
     }
 
 
     function returnPosition(address carAddress) public returns (string, string){
-        //return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
         return (carDatabase[carAddress].lat, carDatabase[carAddress].long);
     }
 
@@ -85,12 +76,12 @@ contract CarRegistry {
         trips[carAddr].client = msg.sender;  
         trips[carAddr].lat = custLat;
         trips[carAddr].long = custLong;
-        trips[carAddr].tripStatus = 1; //Trip Pending
+        trips[carAddr].tripStatus = 1111; //Trip Pending
     }
 
     function startRide(address carAddr, string destLat, string destLong) public {
         if (trips[carAddr].client == msg.sender){
-            trips[carAddr].tripStatus = 2;  //Trip in Progress
+            trips[carAddr].tripStatus = 2222;  //Trip in Progress
             trips[carAddr].lat = destLat;
             trips[carAddr].long = destLong;
 
@@ -99,7 +90,7 @@ contract CarRegistry {
 
     function finishRide(address carAddr) public {
         if (trips[carAddr].client == msg.sender){
-            trips[carAddr].tripStatus = 3;  //Trip Finished
+            trips[carAddr].tripStatus = 3333;  //Trip Finished
         }
     }
 
@@ -110,7 +101,7 @@ contract CarRegistry {
 
 
     function toggleLock(address carAddr, bool newLockState) public {    //True unlocks, false locks
-        if (trips[carAddr].tripStatus == 2 && trips[carAddr].client == msg.sender){
+        if (trips[carAddr].tripStatus == 2222 && trips[carAddr].client == msg.sender){
             if (trips[carAddr].isUnlocked != newLockState){
                 trips[carAddr].isUnlocked = newLockState;
             }
@@ -140,7 +131,7 @@ contract CarRegistry {
         }
     }
 
-    function checkTripStatus() public returns (uint8){
+    function checkTripStatus() public returns (uint){
         return trips[msg.sender].tripStatus;
     }
 
