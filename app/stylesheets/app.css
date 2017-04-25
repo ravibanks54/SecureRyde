@@ -56,7 +56,8 @@ h3 {
 }
 
 #balance {
-  color: black;
+  color: white;
+  font-weight: bold;
 }
 
 .hint {

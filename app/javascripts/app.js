@@ -63,7 +63,7 @@ window.App = {
 	 	accounts = accs;
 	 	account = accounts[0]; 
 	 	var balance = web3.fromWei(web3.eth.getBalance(accs[0]), "ether")
-	 	self.setElement(balance, 'balance');
+	 	self.setElement(balance.round(2), 'balance');
 
 
 	 	self.initializeCarRegistry();
@@ -319,7 +319,8 @@ window.App = {
 
 			 	 
 	 		var balance = web3.fromWei(web3.eth.getBalance(account), "ether")
-	 		self.setElement(balance, 'balance');
+
+	 		self.setElement(balance.round(2), 'balance');
 
 			carLocations[nearestCar].setPosition(originalPosition);
 			for(var i = 0; i < carLocations.length; i++){
@@ -365,7 +366,7 @@ window.App = {
 			return register.withdrawFunds({from: accounts[1], value: costInWei, gas: 167045});
 		}).then(function(response){
 			console.log(response);
-			console.log(web3.fromWei(web3.eth.getBalance(accounts[1]), "ether"));
+			//console.log(web3.fromWei(web3.eth.getBalance(accounts[1]), "ether"));
 		}).catch(function(e) {
 			console.log(e);
 		});
@@ -450,6 +451,7 @@ window.App = {
 			}).then(function(cost) {
 				globalCostInEth = cost;
 				var costInDollars = cost*50;
+				cost = cost.toFixed(4);
 				self.setElement(cost + " ether", 'costEstimate');
 				self.setElement("$" + costInDollars, 'costEstimateDollars');
 			}).catch(function (e){
