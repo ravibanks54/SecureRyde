@@ -15,7 +15,7 @@ contract CarRegistry {
     /*
     "0x6c68d25601e3b02fd2b22bb287bdbf5ec85c9b20", "40.4317", "-74.4050", "40.594", "-74.6049"
     */
-    event TripQuoted(uint tripCost, uint timeToArrival);
+    event TripStatusUpdate(address carAddr, string TripStatus);
     /* Constructor */
     function CarRegistry(){
 
@@ -77,6 +77,8 @@ contract CarRegistry {
         trips[carAddr].lat = custLat;
         trips[carAddr].long = custLong;
         trips[carAddr].tripStatus = 1111; //Trip Pending
+        trips[carAddr].isUnlocked = false;
+        TripStatusUpdate(carAddr, "Trip confirmed.");
     }
 
     function startRide(address carAddr, string destLat, string destLong) public {
@@ -84,13 +86,16 @@ contract CarRegistry {
             trips[carAddr].tripStatus = 2222;  //Trip in Progress
             trips[carAddr].lat = destLat;
             trips[carAddr].long = destLong;
-
+            TripStatusUpdate(carAddr, "Trip in progress.");
         }
     }
 
     function finishRide(address carAddr) public {
         if (trips[carAddr].client == msg.sender){
             trips[carAddr].tripStatus = 3333;  //Trip Finished
+            trips[carAddr].isUnlocked = false;
+            TripStatusUpdate(carAddr, "Trip finished.");
+
         }
     }
 
@@ -104,6 +109,12 @@ contract CarRegistry {
         if (trips[carAddr].tripStatus == 2222 && trips[carAddr].client == msg.sender){
             if (trips[carAddr].isUnlocked != newLockState){
                 trips[carAddr].isUnlocked = newLockState;
+                if (newLockState == true){
+                        TripStatusUpdate(carAddr, "Unlocking...");
+                    }else{
+                        TripStatusUpdate(carAddr, "Locking...");
+
+                    }
             }
         }
     }

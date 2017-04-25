@@ -131,14 +131,7 @@ window.App = {
 
 		for (var k = 0; k < distances.length; k++){
 			curTime = distances[k];
-		  	/*var pos1 = pos;
-		  	var pos2 = carLocations[k].position;
-		  	self.calcTime(pos1, pos2);
-		  	curTime = bestTotalDuration;
-		  	console.log("We are looking at a different car now:");
-		  	console.log("Here is the position of the car: " + pos2);
-		  	console.log("The time for this car: " + curTime);
-		  	console.log("bestTotalDuration: " + bestTotalDuration);*/
+	
 		  	if (mintime == -1){
 		  		mintime = curTime;
 		  		carNumber = k;
@@ -209,40 +202,24 @@ window.App = {
 				var costInWei = 1000000000000000000*globalCostInEth;
 			//	return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), destLatString, destLongString, {from: account, value: costInWei, gas: 10000000, gasPrice: web3.toWei(300, 'gwei')})
 			document.getElementById("carControlBlock").style.display = 'block';
-			document.getElementById("rydeStatus").innerHTML = "Your ryde is currently being confirmed...";
-			document.getElementById("rydeStatus").innerHTML = "Your ryde has been confirmed. Your vehicle is on it's way."
-
-			var date = new Date();
-			var curDate = null;
-			do { curDate = new Date(); }
-			while(curDate-date < 5000);
+			document.getElementById("rydeStatus").innerHTML = "Your ryde is currently being confirmed and your vehicle will be on its way soon!";
+			document.getElementById("confirmButton").disabled = true;
+			document.getElementById("startSessionButton").disabled = true;
+			document.getElementById("lockCarButton").disabled = true;
+			document.getElementById("unlockCarButton").disabled = true;
+			document.getElementById("endSessionButton").disabled = true;
 			return register.confirmTrip(carEthAddresses[nearestCar], pos.lat.toString(), pos.lng.toString(), {from: account, value: costInWei, gas: 167045})
 		}).then(function(tx_id){
 			//console.log("Confirm Ride transaction completed!");
-			document.getElementById("rydeStatus").innerHTML = "Your ryde has been confirmed. Your vehicle is on it's way."
-			var date = new Date();
-			var curDate = null;
-			do { curDate = new Date(); }
-			while(curDate-date < 5000);
 			document.getElementById("rydeStatus").innerHTML = 'Hit the "Begin Your Ryde" button to start the session.';
-			//return register.checkTripStatus.call(carEthAddresses[nearestCar], {from: accounts[0]});
-		}).then(function(response){
-			//console.log(response);
+			document.getElementById("send").disabled = true;
+			$("#carControlBlock").removeAttr('hidden');
+			document.getElementById("startSessionButton").disabled = false;
+			originalPosition = carLocations[nearestCar].position;
+			carLocations[nearestCar].setPosition(pos);
 		}).catch(function(e) {
 			console.log(e);
-		});
-
-		document.getElementById("send").disabled = true;
-		document.getElementById("confirmButton").disabled = true;
-		$("#carControlBlock").removeAttr('hidden');
-		document.getElementById("startSessionButton").disabled = false;
-		document.getElementById("lockCarButton").disabled = true;
-		document.getElementById("unlockCarButton").disabled = true;
-		document.getElementById("endSessionButton").disabled = true;
-		originalPosition = carLocations[nearestCar].position;
-		carLocations[nearestCar].setPosition(pos);
-
-		
+		});		
 	},
 
 	startSession: function(){
@@ -251,25 +228,25 @@ window.App = {
 		var register;
 		CarRegistry.deployed().then(function(instance) {
 			register = instance;
-			var destLatString = destination.geometry.location.lat.toString();
-			var destLongString = destination.geometry.location.lng.toString();
+			var destLatString = destination.geometry.location.lat().toString();
+			var destLongString = destination.geometry.location.lng().toString();
+			document.getElementById("rydeStatus").innerHTML = 'Authentication In Progress: Making Sure Your Ryde Is Safe';
+			document.getElementById("startSessionButton").disabled = true;	
 			return register.startRide(carEthAddresses[nearestCar], destLatString, destLongString, {from: account})
 		}).then(function(tx_id){
+			document.getElementById("rydeStatus").innerHTML = 'Your session has started and your vehicle is LOCKED';
+			document.getElementById("unlockCarButton").disabled = false;
+			document.getElementById("endSessionButton").disabled = false;
 			//console.log("Start Ride transaction completed!");
-			return register.confirmPayment.call(carEthAddresses[nearestCar], {from: account, gas: 167045});
-		}).then(function(response){
-			//console.log(response);
+			//return register.confirmPayment.call(carEthAddresses[nearestCar], {from: account, gas: 167045});
 		}).catch(function(e) {
 			console.log(e);
 		});
-		var date = new Date();
+		/*var date = new Date();
 		var curDate = null;
 		do { curDate = new Date(); }
-		while(curDate-date < 5000);
-		document.getElementById("rydeStatus").innerHTML = 'Your vehicle is LOCKED';
-		document.getElementById("unlockCarButton").disabled = false;
-		document.getElementById("endSessionButton").disabled = false;
-		document.getElementById("startSessionButton").disabled = true;;	
+		while(curDate-date < 5000);*/
+
 	},
 
 	lockCar: function(){
@@ -281,16 +258,17 @@ window.App = {
 			return register.toggleLock(carEthAddresses[nearestCar], false, {from: account, gas: 167045})
 		}).then(function(tx_id){
 			//console.log("Lock transaction completed!");
+			document.getElementById("rydeStatus").innerHTML = 'Ryde in Progress: your vehicle is LOCKED';
+			document.getElementById("unlockCarButton").disabled = false;
+			document.getElementById("lockCarButton").disabled = true;
 		}).catch(function(e) {
 			console.log(e);
 		});
-		var date = new Date();
+		/*var date = new Date();
 		var curDate = null;
 		do { curDate = new Date(); }
-		while(curDate-date < 5000);
-		document.getElementById("rydeStatus").innerHTML = 'Your vehicle is LOCKED';
-		document.getElementById("unlockCarButton").disabled = false;
-		document.getElementById("lockCarButton").disabled = true;
+		while(curDate-date < 5000);*/
+
 
 	},
 
@@ -303,16 +281,17 @@ window.App = {
 			return register.toggleLock(carEthAddresses[nearestCar], true, {from: account, gas: 167045})
 		}).then(function(tx_id){
 			//console.log("Unlock transaction compleeted");
+			document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is UNLOCKED';
+			document.getElementById("unlockCarButton").disabled = true;
+			document.getElementById("lockCarButton").disabled = false;
 		}).catch(function(e) {
 			console.log(e);
 		});
-		var date = new Date();
+		/*var date = new Date();
 		var curDate = null;
 		do { curDate = new Date(); }
-		while(curDate-date < 5000);
-		document.getElementById("rydeStatus").innerHTML = 'Ryde in progress: your vehicle is UNLOCKED';
-		document.getElementById("unlockCarButton").disabled = true;
-		document.getElementById("lockCarButton").disabled = false;
+		while(curDate-date < 5000);*/
+
 
 	},
 
@@ -329,26 +308,27 @@ window.App = {
 			return register.finishRide(carEthAddresses[nearestCar], {from: account, gas: 167045})
 		}).then(function(tx_id){
 			//console.log("Finish ride transaction completed.");
+			document.getElementById("lockCarButton").disabled = true;
+			document.getElementById("unlockCarButton").disabled = true;
+			document.getElementById("endSessionButton").disabled = true;
+			document.getElementById("startSessionButton").disabled = true;
+			document.getElementById("carControlBlock").style.display = 'none';
+			document.getElementById("quoteInfoBlock").style.display = 'none';
+			document.getElementById("send").disabled = false;
+			document.getElementById("confirmButton").disabled = false;
+
+			 	 
+	 		var balance = web3.fromWei(web3.eth.getBalance(account), "ether")
+	 		self.setElement(balance, 'balance');
+
+			carLocations[nearestCar].setPosition(originalPosition);
+			for(var i = 0; i < carLocations.length; i++){
+				carLocations[i].setMap(map);
+			}
 		}).catch(function(e) {
 			console.log(e);
 		});
-		document.getElementById("lockCarButton").disabled = true;
-		document.getElementById("unlockCarButton").disabled = true;
-		document.getElementById("endSessionButton").disabled = true;
-		document.getElementById("startSessionButton").disabled = true;
-		document.getElementById("carControlBlock").style.display = 'none';
-		document.getElementById("quoteInfoBlock").style.display = 'none';
-		document.getElementById("send").disabled = false;
-		document.getElementById("confirmButton").disabled = false;
 
-			 	 
-	 	var balance = web3.fromWei(web3.eth.getBalance(account), "ether")
-	 	self.setElement(balance, 'balance');
-
-		carLocations[nearestCar].setPosition(originalPosition);
-		for(var i = 0; i < carLocations.length; i++){
-			carLocations[i].setMap(map);
-		}
 	},
 
 	checkTripStatus: function() {
