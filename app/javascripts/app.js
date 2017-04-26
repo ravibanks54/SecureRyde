@@ -34,6 +34,7 @@ var carDirectionsDisplay;
 var carDirectionsService;
 var globalCostInEth;
 var originalPosition;
+var customerBalance; 
 
 window.App = {
 	start: function() {
@@ -64,6 +65,7 @@ window.App = {
 	 	account = accounts[0]; 
 	 	var balance = web3.fromWei(web3.eth.getBalance(accs[0]), "ether")
 	 	self.setElement(balance.round(2), 'balance');
+	 	customerBalance = balance;
 
 
 	 	self.initializeCarRegistry();
@@ -195,6 +197,10 @@ window.App = {
 		},
 		confirmRide: function(){
 			var self = this;
+			if(customerBalance < globalCostInEth){
+					alert("ERROR: The cost of the trip exceeds the balance you have in your account currently. Please try another location.");
+					self.codeAddress();
+			}else{
 			var register;
 			//console.log("Your ryde is on it's way! Please wait a few minutes for your ryde to get here.");
 			CarRegistry.deployed().then(function(instance) {
@@ -220,6 +226,7 @@ window.App = {
 		}).catch(function(e) {
 			console.log(e);
 		});		
+		}
 	},
 
 	startSession: function(){
@@ -461,7 +468,6 @@ window.App = {
 				//self.setElement("you cannot afford this", 'costEstimate');
 				document.getElementById("quoteInfoBlock").style.display = 'block';
 				self.findNearestCar();
-
 			}else{
 				console.log("Problem with destination entered. Please try again.");
 			}

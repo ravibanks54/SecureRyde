@@ -71,7 +71,7 @@ contract CarRegistry {
         if (msg.value == 0){
             throw;
         }
-        escrow[carAddr] = msg.value;
+        escrow[carAddr] = escrow[carAddr] + msg.value;
         //trips[carAddr] = TripPosition(msg.sender, custLat, custLong, false, 1);
         trips[carAddr].client = msg.sender;  
         trips[carAddr].lat = custLat;
